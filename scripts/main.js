@@ -34,7 +34,8 @@ function main() {
     var spendField = "sum_Federal";
     var sumFields = ["Federal", "GovXFer", "State", "Local"];
     var sourceFields = ["Category", "Level1", "Level2", "Level3", "Level4"];
-
+	
+	var cores=["#ff0000","#00ff00"];
     var colors = ["#bd0026", "#fecc5c", "#fd8d3c", "#f03b20", "#B02D5D",
         "#9B2C67", "#982B9A", "#692DA7", "#5725AA", "#4823AF",
         "#d7b5d8", "#dd1c77", "#5A0C7A", "#5A0C7A"];
@@ -287,9 +288,15 @@ function main() {
             })
             .on("mouseout", function (d) { node_onMouseOut(d)})
             .style("fill", function (d) {
-                circles[d.key] = this;
-                return d.source ? d.source.linkColor : d.linkColor;
-            })
+				var escala = d3.scale.linear().range([cores[0],cores[1]]);
+				
+				escala.domain([100,20000]);
+				
+				return escala(d["sum_Federal"]);
+				})
+//                circles[d.key] = this;
+//                return d.source ? d.source.linkColor : d.linkColor;
+//            })
             .style("fill-opacity", ".8")
             .style("stroke", function (d) {
                 return d.source ? d.source.linkColor : d.linkColor;
@@ -323,8 +330,18 @@ function main() {
 
         nodeUpdate.select("circle")
             .attr("r", function (d) { return isNaN(nodeRadius(d[spendField])) ? 2: nodeRadius(d[spendField]); })
-            .style("fill", function (d) { return d.source ? d.source.linkColor : d.linkColor })
-            .style("fill-opacity", function (d) { return ((d.depth + 1) / 5);});
+            .style("fill", function (d) {
+				var escala = d3.scale.linear().range([cores[0],cores[1]]);
+				
+				escala.domain([100,20000]);
+				
+				return escala(d["sum_Federal"]);
+				})
+//				return d.source ? d.source.linkColor : d.linkColor 
+//				})
+            .style("fill-opacity", 1
+//			function (d) { return ((d.depth + 1) / 5);}
+			);
 
         nodeUpdate.select("text")
             .style("fill-opacity", 1);
