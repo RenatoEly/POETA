@@ -228,7 +228,7 @@ function main() {
 
         var duration = d3.event && d3.event.altKey ? 5000 : 500;
 
-        var nodes = tree.nodes(root).reverse();
+        var nodes = tree.nodes(root);
 
         var depthCounter = 0;
 
@@ -242,7 +242,7 @@ function main() {
             d.numChildren = (d.children) ? d.children.length : 0;
 			var escala = d3.scale.linear().range([cores[0],cores[1]]);
 			
-			escala.domain([100,20000]);
+			escala.domain([0,20000]);
 			
 			d.linkColor = escala(d["sum_Federal"]);
 			});
@@ -294,18 +294,15 @@ function main() {
             })
             .on("mouseout", function (d) { node_onMouseOut(d)})
             .style("fill", function (d) {
-				var escala = d3.scale.linear().range([cores[0],cores[1]]);
-				
-				escala.domain([100,20000]);
-				
-				return escala(d["sum_Federal"]);
+				return d.linkColor;
 				})
 //                circles[d.key] = this;
 //                return d.source ? d.source.linkColor : d.linkColor;
 //            })
             .style("fill-opacity", ".8")
             .style("stroke", function (d) {
-                return d.source ? d.source.linkColor : d.linkColor;
+				return d.linkColor;
+//                return d.source ? d.source.linkColor : d.linkColor;
             });
 
         nodeEnter.append("svg:text")
@@ -337,11 +334,7 @@ function main() {
         nodeUpdate.select("circle")
             .attr("r", function (d) { return isNaN(nodeRadius(d[spendField])) ? 2: nodeRadius(d[spendField]); })
             .style("fill", function (d) {
-				var escala = d3.scale.linear().range([cores[0],cores[1]]);
-				
-				escala.domain([100,20000]);
-				
-				return escala(d["sum_Federal"]);
+				return d.linkColor;
 				})
 //				return d.source ? d.source.linkColor : d.linkColor 
 //				})
@@ -391,8 +384,8 @@ function main() {
 				.attr("x1", "0%")
 				.attr("y1", "0%")
 				.attr("x2", "100%")
-				.attr("y2", "100%")
-//				.attr("spreadMethod", "pad");
+				.attr("y2", "0%")
+				.attr("spreadMethod", "pad");
 				
 				gradient.append("stop")
 			    .attr("offset", "0%")
@@ -426,6 +419,7 @@ function main() {
             .style("stroke-opacity",function (d) {
                 var ret = ((d.source.depth + 1) / 4.5)
                 if (d.target[spendField] <= 0) ret = .1;
+				return 1;
                 return ret;
             })
 
