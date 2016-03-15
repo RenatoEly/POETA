@@ -207,7 +207,6 @@ function main() {
                             levelCeil[node.depth-1]["sum_" + sumFields[i]] = Math.max(levelCeil[node.depth-1]["sum_" + sumFields[i]], Number(node["sum_" + sumFields[i]]));
                             setSourceFields(node, node.parent);
                         }
-
                     }
                 }
             }
@@ -221,7 +220,6 @@ function main() {
             }
             setSourceFields(node, node.parent);
         }
-
     }
 
     function update(source) {
@@ -328,6 +326,11 @@ function main() {
         var nodeUpdate = node.transition()
             .duration(duration)
             .attr("transform", function (d) {
+				if(d.parent){
+					if(d.parent.x === d.x){
+						d.x = d.x-0.1;
+					}
+				}
                 return "translate(" + d.y + "," + d.x + ")";
             });
 
@@ -360,7 +363,7 @@ function main() {
             .data(tree.links(nodes), function (d) {
                 return d.target.id;
             });
-
+		
         var rootCounter = 0;
 
         // Enter any new links at the parent's previous position.
@@ -380,12 +383,12 @@ function main() {
             .style("stroke", function (d, i) {
 				var gradient = svg.append("defs")
 				.append("linearGradient")
-				.attr("id", "gradient_"+i)
+				.attr("id", "gradient_"+d.target.id)
 				.attr("x1", "0%")
 				.attr("y1", "0%")
-				.attr("x2", "100%")
+				.attr("x2", "80%")
 				.attr("y2", "0%")
-				.attr("spreadMethod", "pad");
+//				.attr("spreadMethod", "pad");
 				
 				gradient.append("stop")
 			    .attr("offset", "0%")
@@ -396,8 +399,8 @@ function main() {
 			    .attr("offset", "100%")
 			    .attr("stop-color", d.target.linkColor)
 			    .attr("stop-opacity", 1);
-               
-			   	return "url(#gradient_"+i+")"
+                
+			   	return "url(#gradient_"+d.target.id+")"
 /*				if (d.source.depth == 0) {
                     rootCounter++;
                     return (d.source.children[rootCounter - 1].linkColor);
