@@ -30,12 +30,17 @@ function main() {
         h = 900 - m[0] - m[2],
         i = 0,
         root = {};
-
+	
     var spendField = "sum_Federal";
     var sumFields = ["Federal", "GovXFer", "State", "Local"];
     var sourceFields = ["Category", "Level1", "Level2", "Level3", "Level4"];
-	
+	//Atributo que será usado para calcular a cor dos nós
+	var campoAnalize = "sum_Federal";
+	//Possíveis cores dos nós. Vermelho e verde, respectivamente.
 	var cores=["#ff0000","#00ff00"];
+	//valores do dominio para escala de cores. Menor valor fica a primeira cor do array cores e o maior a segunda.
+	var dominio = [0,20000];
+	
     var colors = ["#bd0026", "#fecc5c", "#fd8d3c", "#f03b20", "#B02D5D",
         "#9B2C67", "#982B9A", "#692DA7", "#5725AA", "#4823AF",
         "#d7b5d8", "#dd1c77", "#5A0C7A", "#5A0C7A"];
@@ -240,9 +245,9 @@ function main() {
             d.numChildren = (d.children) ? d.children.length : 0;
 			var escala = d3.scale.linear().range([cores[0],cores[1]]);
 			
-			escala.domain([0,20000]);
+			escala.domain([dominio[0],dominio[1]]);
 			
-			d.linkColor = escala(d["sum_Federal"]);
+			d.linkColor = escala(d[campoAnalize]);
 			});
 /*            if (d.depth == 1) {
                 d.linkColor = colors[(depthCounter % (colors.length - 1))];
