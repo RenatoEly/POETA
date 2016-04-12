@@ -30,17 +30,18 @@ function main() {
         h = 900 - m[0] - m[2],
         i = 0,
         root = {};
-	
+
     var spendField = "sum_Federal";
     var sumFields = ["Federal", "GovXFer", "State", "Local"];
-    var sourceFields = ["Category", "Level1", "Level2", "Level3", "Level4"];
+    var sourceFields = ["Category", "Level1", "Level2", "Level3", "Level4", "Level5", "Level6", "Level7", "Level8", "Level9", "Level10"];
+
 	//Atributo que será usado para calcular a cor dos nós
 	var campoAnalize = "sum_Federal";
 	//Possíveis cores dos nós. Vermelho e verde, respectivamente.
-	var cores=["#ff0000","#00ff00"];
+	var cores=["#ff0000","#ffff00","#00ff00"];
 	//valores do dominio para escala de cores. Menor valor fica a primeira cor do array cores e o maior a segunda.
-	var dominio = [0,20000];
-	
+	var dominio = [0,10,20];
+
     var colors = ["#bd0026", "#fecc5c", "#fd8d3c", "#f03b20", "#B02D5D",
         "#9B2C67", "#982B9A", "#692DA7", "#5725AA", "#4823AF",
         "#d7b5d8", "#dd1c77", "#5A0C7A", "#5A0C7A"];
@@ -57,16 +58,17 @@ function main() {
 
     tree.children(function (d) { return d.values; }).size([h, w]);
 
-    var toolTip = d3.select(document.getElementById("toolTip"));
-    var header = d3.select(document.getElementById("head"));
-    var header1 = d3.select(document.getElementById("header1"));
-    var header2 = d3.select(document.getElementById("header2"));
+    var toolTip = d3.select(document.getElementById("toolTip")); //Todo o quadro que aparece ao passar o mouse em um nó
+    var header = d3.select(document.getElementById("head"));	 //Texto que aparece no topo do toolTip
+    var header1 = d3.select(document.getElementById("header1")); //Texto logo abaixo do header do toolTip
+    var header2 = d3.select(document.getElementById("header2")); //Texto abaixo do anterior
 
-    var fedSpend = d3.select(document.getElementById("fedSpend"));
+    var fedSpend = d3.select(document.getElementById("fedSpend")); //Subquadro "Federal Funds" dentro do toolTip
 
-    var stateSpend = d3.select(document.getElementById("stateSpend"));
+    var stateSpend = d3.select(document.getElementById("stateSpend")); //Subquadro "State Funds" dentro do toolTip
 
-    var localSpend = d3.select(document.getElementById("localSpend"));
+    var localSpend = d3.select(document.getElementById("localSpend")); //Subquadro "Local Funds" dentro do toolTip
+					//Todos os quadros e header's definidos aqui são declarados no proprio index.html
 
     var federalButton = d3.select(document.getElementById("federalButton"));
     var stateButton = d3.select(document.getElementById("stateButton"));
@@ -87,7 +89,7 @@ function main() {
         .append("svg:g")
         .attr("transform", "translate(" + m[3] + "," + m[0] + ")");
 
-    var levelCeil=[{},{},{},{}];
+    var levelCeil=[{},{},{},{},{},{},{},{},{},{},{}];   //Acrescentei Mais Nós (Níveis de Célula) 25/03/2016
 
     var nodeRadius;
 
@@ -115,6 +117,24 @@ function main() {
             })
             .key(function (d) {
                 return d.Level3;
+            })
+            .key(function (d) {   //======================== 
+                return d.Level4;  //Acrescentei este level  
+            })                    //========================
+            .key(function (d) {   //======================== 
+                return d.Level5;  //Acrescentei este level  
+            })                    //========================
+            .key(function (d) {   //======================== 
+                return d.Level6;  //Acrescentei este level  
+            })                    //========================
+            .key(function (d) {   //======================== 
+                return d.Level7;  //Acrescentei este level  
+            })                    //========================
+            .key(function (d) {   //======================== 
+                return d.Level8;  //Acrescentei este level  
+            })                    //========================
+            .key(function (d) {   //======================== 
+                return d.Level9;  //Acrescentei este level  
             })
             .entries(data);
 
@@ -237,15 +257,16 @@ function main() {
 
         nodeRadius = d3.scale.sqrt()
             .domain([0, levelCeil[0][spendField]])
-            .range([1, 40]);
+            //.range([1, 40]);
+            .range([8, 8]);
 
         // Normalize for fixed-depth.
         nodes.forEach(function (d) {
-            d.y = d.depth * 180;
+            d.y = d.depth * 110;  //Diminuí o tamanho da perna de um nó para o outro (25/03/2016)
             d.numChildren = (d.children) ? d.children.length : 0;
-			var escala = d3.scale.linear().range([cores[0],cores[1]]);
+			var escala = d3.scale.linear().range(cores);
 			
-			escala.domain([dominio[0],dominio[1]]);
+			escala.domain(dominio); //Parâmetro usado para definir a mudança de cores (Verde, Vermelho, amarelo)
 			
 			d.linkColor = escala(d[campoAnalize]);
 			});
@@ -319,7 +340,8 @@ function main() {
                 return d.children || d._children ? "end" : "start";
             })
             .text(function (d) {
-                var ret = (d.depth == 4) ? d.Level4 : d.key;
+                //var ret = (d.depth == 4) ? d.Level4 : d.key;
+                var ret = (d.depth == 10) ? d.Level10 : d.key; //Mudei esta linha, acrescentando o level 9
                 ret = (String(ret).length > 25) ? String(ret).substr(0, 22) + "..." : ret;
                 return ret;
             })

@@ -38,9 +38,9 @@ function main() {
 	//Atributo que será usado para calcular a cor dos nós
 	var campoAnalize = "sum_Federal";
 	//Possíveis cores dos nós. Vermelho e verde, respectivamente.
-	var cores=["#ff0000","#00ff00"];
+	var cores=["#ff0000","#ffff00","#00ff00"];
 	//valores do dominio para escala de cores. Menor valor fica a primeira cor do array cores e o maior a segunda.
-	var dominio = [0,20000];
+	var dominio = [0,10,20];
 
     var colors = ["#bd0026", "#fecc5c", "#fd8d3c", "#f03b20", "#B02D5D",
         "#9B2C67", "#982B9A", "#692DA7", "#5725AA", "#4823AF",
@@ -48,7 +48,7 @@ function main() {
 
     var formatNumber = d3.format(",.2f");
     var formatCurrency = function (d) {
-        return "$" + formatNumber(d) + " Billion"
+        return d
     };
 
     var tree = d3.layout.tree();
@@ -58,16 +58,17 @@ function main() {
 
     tree.children(function (d) { return d.values; }).size([h, w]);
 
-    var toolTip = d3.select(document.getElementById("toolTip"));
-    var header = d3.select(document.getElementById("head"));
-    var header1 = d3.select(document.getElementById("header1"));
-    var header2 = d3.select(document.getElementById("header2"));
+    var toolTip = d3.select(document.getElementById("toolTip")); //Todo o quadro que aparece ao passar o mouse em um nó
+    var header = d3.select(document.getElementById("head"));	 //Texto que aparece no topo do toolTip
+    var header1 = d3.select(document.getElementById("header1")); //Texto logo abaixo do header do toolTip
+    var header2 = d3.select(document.getElementById("header2")); //Texto abaixo do anterior
 
-    var fedSpend = d3.select(document.getElementById("fedSpend"));
+    var fedSpend = d3.select(document.getElementById("fedSpend")); //Subquadro "Federal Funds" dentro do toolTip
 
-    var stateSpend = d3.select(document.getElementById("stateSpend"));
+    var stateSpend = d3.select(document.getElementById("stateSpend")); //Subquadro "State Funds" dentro do toolTip
 
-    var localSpend = d3.select(document.getElementById("localSpend"));
+    var localSpend = d3.select(document.getElementById("localSpend")); //Subquadro "Local Funds" dentro do toolTip
+					//Todos os quadros e header's definidos aqui são declarados no proprio index.html
 
     var federalButton = d3.select(document.getElementById("federalButton"));
     var stateButton = d3.select(document.getElementById("stateButton"));
@@ -263,7 +264,7 @@ function main() {
         nodes.forEach(function (d) {
             d.y = d.depth * 110;  //Diminuí o tamanho da perna de um nó para o outro (25/03/2016)
             d.numChildren = (d.children) ? d.children.length : 0;
-			var escala = d3.scale.linear().range([cores[0],cores[1]]);
+			var escala = d3.scale.linear().range(cores);
 			
 			escala.domain(dominio); //Parâmetro usado para definir a mudança de cores (Verde, Vermelho, amarelo)
 			

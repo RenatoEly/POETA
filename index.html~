@@ -60,7 +60,7 @@
         <div id="header2" class="header2"></div>
         <div style="position:absolute; left:10px">
             <div id="federalTip" class="tip" style="width:135px; left:0px; top:10px; position: absolute;">
-                <div class="header3"><br>Aprovados >= 7</div>
+                <div class="header3"><br>Aprovados >=7</div>
                 <div class="header-rule"></div>
                 <div id="fedSpend" class="header4"></div>
             </div>
