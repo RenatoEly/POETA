@@ -246,6 +246,30 @@ function main() {
             setSourceFields(node, node.parent);
         }
     }
+    
+    function sumNodesCopia(root) {
+		var pai = {};
+		var folhas = [];
+        getLeafs(root,folhas);
+        for(var i = 0; i < folhas.length; i++){
+			pai = folhas[i].parent;
+			while(pai.depth > 2){
+				if(folhas[i]["Nota"+pai.depth] === "d")
+			} 
+		}
+    }
+    
+    function getLeafs(node,leafs){
+		if(node.children){
+			var childrens = node.children;
+			for(var i = 0; i < childrens.length; i++){
+				getLeafs(childrens[i]);
+			}
+		}
+		else{
+			leafs.push(node);
+		}
+	}
 
     function update(source) {
 
