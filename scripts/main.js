@@ -30,17 +30,18 @@ function main() {
         h = 900 - m[0] - m[2],
         i = 0,
         root = {};
-
+	var raio = 10;
     var spendField = "sum_Federal";
     var sumFields = ["Federal", "GovXFer", "State", "Local"];
     var sourceFields = ["Category", "Level1", "Level2", "Level3", "Level4", "Level5", "Level6", "Level7", "Level8", "Level9", "Level10"];
-
+	var campo = ["Aprovados","Reprovados","Desistentes"];
+	
 	//Atributo que será usado para calcular a cor dos nós
 	var campoAnalize = "sum_Federal";
 	//Possíveis cores dos nós. Vermelho e verde, respectivamente.
 	var cores=["#ff0000","#ffff00","#00ff00"];
 	//valores do dominio para escala de cores. Menor valor fica a primeira cor do array cores e o maior a segunda.
-	var dominio = [0,10,20];
+	var dominio = [0,0.5,1];
 
     var colors = ["#bd0026", "#fecc5c", "#fd8d3c", "#f03b20", "#B02D5D",
         "#9B2C67", "#982B9A", "#692DA7", "#5725AA", "#4823AF",
@@ -188,7 +189,8 @@ function main() {
                 }
             }
 
-            sumNodes(root.children);
+            //sumNodes(root.children);
+            sumNodesCopia(root);
         }
 
         function toggleAll(d) {
@@ -218,43 +220,57 @@ function main() {
 
     }
 
-    function sumNodes(nodes) {
-        for (var y = 0; y < nodes.length; y++) {
-            var node = nodes[y];
-            if (node.children) {
-                sumNodes(node.children);
-                for (var z = 0; z < node.children.length; z++) {
-                    var child = node.children[z];
-                    for (var i = 0; i < sumFields.length; i++) {
-                        if (isNaN(node["sum_" + sumFields[i]])) node["sum_" + sumFields[i]] = 0;
-                        node["sum_" + sumFields[i]] += Number(child["sum_" + sumFields[i]]);
-                        if ((node.parent)) {
-                            levelCeil[node.depth-1]["sum_" + sumFields[i]] = Math.max(levelCeil[node.depth-1]["sum_" + sumFields[i]], Number(node["sum_" + sumFields[i]]));
-                            setSourceFields(node, node.parent);
-                        }
-                    }
-                }
-            }
-            else {
-                for (var i = 0; i < sumFields.length; i++) {
-                    node["sum_" + sumFields[i]] = Number(node[sumFields[i]]);
-                    if (isNaN(node["sum_" + sumFields[i]])) {
-                        node["sum_" + sumFields[i]] = 0;
-                    }
-                }
-            }
-            setSourceFields(node, node.parent);
-        }
-    }
+//    function sumNodes(nodes) {
+//        for (var y = 0; y < nodes.length; y++) {
+//            var node = nodes[y];
+//            if (node.children) {
+//                sumNodes(node.children);
+//                for (var z = 0; z < node.children.length; z++) {
+//                    var child = node.children[z];
+//                    for (var i = 0; i < sumFields.length; i++) {
+//                        if (isNaN(node["sum_" + sumFields[i]])) node["sum_" + sumFields[i]] = 0;
+//                        node["sum_" + sumFields[i]] += Number(child["sum_" + sumFields[i]]);
+//                        if ((node.parent)) {
+//                            levelCeil[node.depth-1]["sum_" + sumFields[i]] = Math.max(levelCeil[node.depth-1]["sum_" + sumFields[i]], Number(node["sum_" + sumFields[i]]));
+//                            setSourceFields(node, node.parent);
+//                        }
+//                    }
+//                }
+//            }
+//            else {
+//                for (var i = 0; i < sumFields.length; i++) {
+//                    node["sum_" + sumFields[i]] = Number(node[sumFields[i]]);
+//                    if (isNaN(node["sum_" + sumFields[i]])) {
+//                        node["sum_" + sumFields[i]] = 0;
+//                    }
+//                }
+//            }
+//            setSourceFields(node, node.parent);
+//        }
+//    }
     
     function sumNodesCopia(root) {
 		var pai = {};
 		var folhas = [];
         getLeafs(root,folhas);
         for(var i = 0; i < folhas.length; i++){
+			setSourceFields(folhas[i], folhas[i].parent);
 			pai = folhas[i].parent;
-			while(pai.depth > 2){
-				if(folhas[i]["Nota"+pai.depth] === "d")
+			while(pai.depth >= 1){
+				setSourceFields(pai, pai.parent);
+				if (isNaN(pai[campo[3]])) pai[campo[3]] = 0;
+				if (isNaN(pai[campo[2]])) pai[campo[2]] = 0;
+				if (isNaN(pai[campo[1]])) pai[campo[1]] = 0;
+				if(folhas[i]["Nota"+pai.depth] === "d"){ 
+					pai[campo[3]]++;
+				}
+				else if(Number(folhas[i]["Nota"+pai.depth]) < 7){
+					pai[campo[2]]++;
+				}
+				else if(Number(folhas[i]["Nota"+pai.depth]) >= 7){
+					pai[campo[1]]++;
+				}
+				pai = pai.parent;
 			} 
 		}
     }
@@ -263,7 +279,7 @@ function main() {
 		if(node.children){
 			var childrens = node.children;
 			for(var i = 0; i < childrens.length; i++){
-				getLeafs(childrens[i]);
+				getLeafs(childrens[i],leafs);
 			}
 		}
 		else{
@@ -292,7 +308,7 @@ function main() {
 			
 			escala.domain(dominio); //Parâmetro usado para definir a mudança de cores (Verde, Vermelho, amarelo)
 			
-			d.linkColor = escala(d[campoAnalize]);
+			d.linkColor = escala(d[campo[1]]/(d[campo[1]] + d[campo[2]] + d[campo[3]]));
 			});
 /*            if (d.depth == 1) {
                 d.linkColor = colors[(depthCounter % (colors.length - 1))];
@@ -386,7 +402,7 @@ function main() {
             });
 
         nodeUpdate.select("circle")
-            .attr("r", function (d) { return isNaN(nodeRadius(d[spendField])) ? 2: nodeRadius(d[spendField]); })
+            .attr("r", raio)//function (d) { return isNaN(nodeRadius(d[spendField])) ? 2: nodeRadius(d[spendField]); })
             .style("fill", function (d) {
 				return d.linkColor;
 				})
@@ -460,7 +476,7 @@ function main() {
                     return (d.source) ? d.source.linkColor : d.linkColor;
                 }*/
             })
-            .style("stroke-width", function (d, i) { return isNaN(nodeRadius(d.target[spendField])) ? 4: nodeRadius(d.target[spendField])*2; })
+            .style("stroke-width", 2*raio)//function (d, i) { return isNaN(nodeRadius(d.target[spendField])) ? 4: nodeRadius(d.target[spendField])*2; })
 //            .style("stroke-opacity",function (d) { return d.target[spendField] <= 0 ? .1 : ((d.source.depth + 1) / 4.5); })
             .style("stroke-linecap", "round")
             .on("mouseover", function (d) {node_onMouseOver(d.source);})
@@ -469,7 +485,7 @@ function main() {
         link.transition()
             .duration(duration)
             .attr("d", diagonal)
-            .style("stroke-width", function (d, i) { return isNaN(nodeRadius(d.target[spendField])) ? 4: nodeRadius(d.target[spendField])*2; })
+            .style("stroke-width", 2*raio)//function (d, i) { return isNaN(nodeRadius(d.target[spendField])) ? 4: nodeRadius(d.target[spendField])*2; })
             .style("stroke-opacity",function (d) {
                 var ret = ((d.source.depth + 1) / 4.5)
                 if (d.target[spendField] <= 0) ret = .1;
@@ -503,11 +519,11 @@ function main() {
             header2.html((d.depth > 2) ? d["source_Level3"] : "");
             if (d.depth > 3) header2.html(header2.html() + " - " + d["source_Level4"]);
 
-            fedSpend.text(formatCurrency(d["sum_Federal"]));
+            fedSpend.text(formatCurrency(d[campo[1]]));
 
-            stateSpend.text(formatCurrency(d["sum_State"]));
+            stateSpend.text(formatCurrency(d[campo[2]]));
 
-            localSpend.text(formatCurrency(d["sum_Local"]));
+            localSpend.text(formatCurrency(d[campo[3]]));
 
             toolTip.style("left", (d3.event.pageX + 15) + "px")
                 .style("top", (d3.event.pageY - 75) + "px");
