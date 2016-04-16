@@ -189,7 +189,8 @@ function main() {
                 }
             }
 
-            //sumNodes(root.children);
+           // sumNodes(root.children);
+	    setAnimacao(root.children);
             sumNodesCopia(root);
         }
 
@@ -220,20 +221,20 @@ function main() {
 
     }
 
-//    function sumNodes(nodes) {
+//   function sumNodes(nodes) {
 //        for (var y = 0; y < nodes.length; y++) {
 //            var node = nodes[y];
 //            if (node.children) {
 //                sumNodes(node.children);
 //                for (var z = 0; z < node.children.length; z++) {
-//                    var child = node.children[z];
+ //                   var child = node.children[z];
 //                    for (var i = 0; i < sumFields.length; i++) {
 //                        if (isNaN(node["sum_" + sumFields[i]])) node["sum_" + sumFields[i]] = 0;
 //                        node["sum_" + sumFields[i]] += Number(child["sum_" + sumFields[i]]);
-//                        if ((node.parent)) {
-//                            levelCeil[node.depth-1]["sum_" + sumFields[i]] = Math.max(levelCeil[node.depth-1]["sum_" + sumFields[i]], Number(node["sum_" + sumFields[i]]));
-//                            setSourceFields(node, node.parent);
-//                        }
+                        //if ((node.parent)) {
+                           // levelCeil[node.depth-1]["sum_" + sumFields[i]] = Math.max(levelCeil[node.depth-1]["sum_" + sumFields[i]], Number(node["sum_" + sumFields[i]]));
+                            //setSourceFields(node, node.parent);
+                        //}
 //                    }
 //                }
 //            }
@@ -244,11 +245,36 @@ function main() {
 //                        node["sum_" + sumFields[i]] = 0;
 //                    }
 //                }
-//            }
-//            setSourceFields(node, node.parent);
-//        }
+//           }
+           // setSourceFields(node, node.parent);
+ //       }
 //    }
     
+
+   function setAnimacao(nodes) {
+        for (var y = 0; y < nodes.length; y++) {
+            var node = nodes[y];
+           if (node.children) {
+                setAnimacao(node.children);
+               for (var z = 0; z < node.children.length; z++) {
+                   var child = node.children[z];
+                   for (var i = 0; i < sumFields.length; i++) {
+                        if (isNaN(node["sum_" + sumFields[i]])) node["sum_" + sumFields[i]] = 0;
+                        node["sum_" + sumFields[i]] += Number(child["sum_" + sumFields[i]]);
+                   }
+               }
+           }
+           else {
+              for (var i = 0; i < sumFields.length; i++) {
+                    node["sum_" + sumFields[i]] = Number(node[sumFields[i]]);
+                    if (isNaN(node["sum_" + sumFields[i]])) {
+                        node["sum_" + sumFields[i]] = 0;
+                    }
+               }
+          }
+        
+       }
+    }
     function sumNodesCopia(root) {
 		var pai = {};
 		var folhas = [];
