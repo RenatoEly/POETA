@@ -34,14 +34,17 @@ function main() {
     var spendField = "sum_Federal";
     var sumFields = ["Federal", "GovXFer", "State", "Local"];
     var sourceFields = ["Category", "Level1", "Level2", "Level3", "Level4", "Level5", "Level6", "Level7", "Level8", "Level9", "Level10"];
-	var campo = ["Aprovados","Reprovados","Desistentes"];
+	var campo = ["Nota >= 7","Nota < 7","Desistentes"];
 	
 	//Atributo que será usado para calcular a cor dos nós
 	var campoAnalize = "sum_Federal";
-	//Possíveis cores dos nós. Vermelho e verde, respectivamente.
+	//Possíveis cores dos nós. Vermelho, amarelo e verde, respectivamente.
 	var cores=["#ff0000","#ffff00","#00ff00"];
 	//valores do dominio para escala de cores. Menor valor fica a primeira cor do array cores e o maior a segunda.
 	var dominio = [0,0.5,1];
+	
+	//Cores para o grafico. Nota >= 7, Nota < 7, Desistentes.
+	var coresGrafico = ["#00ff00","#ff0000","#c7dbe5"];
 
     var colors = ["#bd0026", "#fecc5c", "#fd8d3c", "#f03b20", "#B02D5D",
         "#9B2C67", "#982B9A", "#692DA7", "#5725AA", "#4823AF",
@@ -63,6 +66,79 @@ function main() {
     var header = d3.select(document.getElementById("head"));	 //Texto que aparece no topo do toolTip
     var header1 = d3.select(document.getElementById("header1")); //Texto logo abaixo do header do toolTip
     var header2 = d3.select(document.getElementById("header2")); //Texto abaixo do anterior
+    
+    var graph = new d3pie("pieChart", { //Grafico de pizza
+	"header": {
+		"title": {
+			"text": "Distribuição das notas",
+			"fontSize": 15,
+			"font": "verdana"
+		},
+		"subtitle": {
+			"color": "#999999",
+			"fontSize": 10,
+			"font": "verdana"
+		},
+		"titleSubtitlePadding": 0
+	},
+	"footer": {
+		"color": "#999999",
+		"fontSize": 11,
+		"font": "open sans",
+		"location": "bottom-center"
+	},
+	"size": {
+		"canvasHeight": 300,
+		"canvasWidth": 400,
+		"pieOuterRadius": "90%"
+	},
+	"data": {
+		"content": []
+	},
+	"labels": {
+		"outer": {
+			"pieDistance": 32
+		},
+		"inner": {
+			"format": "value"
+		},
+		"mainLabel": {
+			"font": "verdana",
+			"fontSize": 12
+		},
+		"percentage": {
+			"color": "#ffffff",
+			"font": "verdana",
+			"decimalPlaces": 0
+		},
+		"value": {
+			"color": "#000000",
+			"font": "verdana",
+			"fontSize": 12
+		},
+		"lines": {
+			"enabled": true,
+			"style": "straight"
+		},
+		"truncation": {
+			"enabled": true
+		}
+	},
+	"tooltips": {
+		"enabled": true,
+		"type": "placeholder",
+		"string": " {percentage}%"
+	},
+	"effects": {
+		"load": {
+			"speed": 400
+		},
+		"pullOutSegmentOnClick": {
+			"effect": "linear",
+			"speed": 400
+		}
+	}
+});
 
     var fedSpend = d3.select(document.getElementById("fedSpend")); //Subquadro "Federal Funds" dentro do toolTip
 
@@ -74,9 +150,9 @@ function main() {
     var federalButton = d3.select(document.getElementById("federalButton"));
     var stateButton = d3.select(document.getElementById("stateButton"));
     var localButton = d3.select(document.getElementById("localButton"));
-    var federalTip = d3.select(document.getElementById("federalTip"));
-    var stateTip = d3.select(document.getElementById("stateTip"));
-    var localTip = d3.select(document.getElementById("localTip"));
+    //var federalTip = d3.select(document.getElementById("federalTip"));
+    //var stateTip = d3.select(document.getElementById("stateTip"));
+    //var localTip = d3.select(document.getElementById("localTip"));
 
 
     var diagonal = d3.svg.diagonal()
@@ -258,17 +334,18 @@ function main() {
 			pai = folhas[i].parent;
 			while(pai.depth >= 1){
 				setSourceFields(pai, pai.parent);
-				if (isNaN(pai[campo[3]])) pai[campo[3]] = 0;
 				if (isNaN(pai[campo[2]])) pai[campo[2]] = 0;
 				if (isNaN(pai[campo[1]])) pai[campo[1]] = 0;
+				if (isNaN(pai[campo[0]])) pai[campo[0]] = 0;
+				
 				if(folhas[i]["Nota"+pai.depth] === "d"){ 
-					pai[campo[3]]++;
-				}
-				else if(Number(folhas[i]["Nota"+pai.depth]) < 7){
 					pai[campo[2]]++;
 				}
-				else if(Number(folhas[i]["Nota"+pai.depth]) >= 7){
+				else if(Number(folhas[i]["Nota"+pai.depth]) < 7){
 					pai[campo[1]]++;
+				}
+				else if(Number(folhas[i]["Nota"+pai.depth]) >= 7){
+					pai[campo[0]]++;
 				}
 				pai = pai.parent;
 			} 
@@ -308,7 +385,7 @@ function main() {
 			
 			escala.domain(dominio); //Parâmetro usado para definir a mudança de cores (Verde, Vermelho, amarelo)
 			
-			d.linkColor = escala(d[campo[1]]/(d[campo[1]] + d[campo[2]] + d[campo[3]]));
+			d.linkColor = escala(d[campo[0]]/(d[campo[0]] + d[campo[1]] + d[campo[2]]));
 			});
 /*            if (d.depth == 1) {
                 d.linkColor = colors[(depthCounter % (colors.length - 1))];
@@ -453,7 +530,7 @@ function main() {
 				.attr("id", "gradient_"+d.target.id)
 				.attr("x1", "0%")
 				.attr("y1", "0%")
-				.attr("x2", "80%")
+				.attr("x2", "100%")
 				.attr("y2", "0%")
 //				.attr("spreadMethod", "pad");
 				
@@ -506,8 +583,8 @@ function main() {
 
 
         function node_onMouseOver(d) {
-
-            if (typeof d.target != "undefined") {
+			
+			if (typeof d.target != "undefined") {
                 d = d.target;
             }
 
@@ -515,21 +592,28 @@ function main() {
                 .duration(200)
                 .style("opacity", ".9");
             header.text(d["source_Level1"]);
-            header1.text((d.depth > 1) ? d["source_Level2"] : "");
-            header2.html((d.depth > 2) ? d["source_Level3"] : "");
-            if (d.depth > 3) header2.html(header2.html() + " - " + d["source_Level4"]);
+            //header1.text((d.depth > 1) ? d["source_Level2"] : "");
+            //header2.html((d.depth > 2) ? d["source_Level3"] : "");
+            //if (d.depth > 3) header2.html(header2.html() + " - " + d["source_Level4"]);
 
-            fedSpend.text(formatCurrency(d[campo[1]]));
+            //fedSpend.text(formatCurrency(d[campo[0]]));
 
-            stateSpend.text(formatCurrency(d[campo[2]]));
+            //stateSpend.text(formatCurrency(d[campo[1]]));
 
-            localSpend.text(formatCurrency(d[campo[3]]));
+            //localSpend.text(formatCurrency(d[campo[2]]));
 
             toolTip.style("left", (d3.event.pageX + 15) + "px")
                 .style("top", (d3.event.pageY - 75) + "px");
 
-            d3.select(labels[d.key]).transition().style("font-weight","bold").style("font-size","16");;
-            d3.select(circles[d.key]).transition().style("fill-opacity",0.6);
+            d3.select(labels[d.key]).transition().style("font-weight","bold").style("font-size","16");
+            //d3.select(circles[d.key]).transition().style("fill-opacity",0.6);
+            
+            var dados = [{label: campo[0], value: d[campo[0]], color: coresGrafico[0]},
+					  {label: campo[1], value: d[campo[1]], color: coresGrafico[1]},
+					  {label: campo[2], value: d[campo[2]], color: coresGrafico[2]}
+					  ];
+            
+            graph.updateProp("data.content",dados);
 //            highlightPath(d);
 
 //            function highlightPath(d) {
