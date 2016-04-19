@@ -363,14 +363,15 @@ function main() {
 				if (isNaN(pai[campo[2]])) pai[campo[2]] = 0;
 				if (isNaN(pai[campo[1]])) pai[campo[1]] = 0;
 				if (isNaN(pai[campo[0]])) pai[campo[0]] = 0;
+				folhas[i]["Nota"+pai.depth] = Number(folhas[i]["Nota"+pai.depth]);
 				
-				if(folhas[i]["Nota"+pai.depth] === "d"){ 
+				if(isNaN(folhas[i]["Nota"+pai.depth])){ 
 					pai[campo[2]]++;
 				}
-				else if(Number(folhas[i]["Nota"+pai.depth]) < 7){
+				else if(folhas[i]["Nota"+pai.depth] < 7){
 					pai[campo[1]]++;
 				}
-				else if(Number(folhas[i]["Nota"+pai.depth]) >= 7){
+				else if(folhas[i]["Nota"+pai.depth] >= 7){
 					pai[campo[0]]++;
 				}
 				pai = pai.parent;
@@ -411,7 +412,23 @@ function main() {
 			
 			escala.domain(dominio); //Parâmetro usado para definir a mudança de cores (Verde, Vermelho, amarelo)
 			
-			d.linkColor = escala(d[campo[0]]/(d[campo[0]] + d[campo[1]] + d[campo[2]]));
+			if(d.numChildren > 0 || d._children){
+				d.linkColor = escala(d[campo[0]]/(d[campo[0]] + d[campo[1]] + d[campo[2]]));
+			}
+			
+			else{
+				var media = 0;
+				var i;
+				for(i = 1; i < d.depth; i++){
+					if(!isNaN(d["Nota"+i])){
+						media += d["Nota"+i];
+					}
+				}
+				console.log(i);
+				media = media/i;
+				console.log(media);
+				d.linkColor = escala(media/10);
+			}
 			});
 /*            if (d.depth == 1) {
                 d.linkColor = colors[(depthCounter % (colors.length - 1))];
