@@ -67,7 +67,7 @@ function main() {
     var header1 = d3.select(document.getElementById("header1")); //Texto logo abaixo do header do toolTip
     var header2 = d3.select(document.getElementById("header2")); //Texto abaixo do anterior
     
-    var graph = new d3pie("pieChart", { //Grafico de pizza
+/*    var graph = new d3pie("pieChart", { //Grafico de pizza
 	"header": {
 		"title": {
 			"text": "Distribuição das notas",
@@ -138,7 +138,7 @@ function main() {
 			"speed": 400
 		}
 	}
-});
+}); */
 
     var fedSpend = d3.select(document.getElementById("fedSpend")); //Subquadro "Federal Funds" dentro do toolTip
 
@@ -637,15 +637,15 @@ function main() {
                 .duration(200)
                 .style("opacity", ".9");
             header.text(d["source_Level1"]);
-            //header1.text((d.depth > 1) ? d["source_Level2"] : "");
-            //header2.html((d.depth > 2) ? d["source_Level3"] : "");
-            //if (d.depth > 3) header2.html(header2.html() + " - " + d["source_Level4"]);
+            header1.text((d.depth > 1) ? d["source_Level2"] : "");
+            header2.html((d.depth > 2) ? d["source_Level3"] : "");
+            if (d.depth > 3) header2.html(header2.html() + " - " + d["source_Level4"]);
 
-            //fedSpend.text(formatCurrency(d[campo[0]]));
+            fedSpend.text(formatCurrency(d[campo[0]]));
 
-            //stateSpend.text(formatCurrency(d[campo[1]]));
+            stateSpend.text(formatCurrency(d[campo[1]]));
 
-            //localSpend.text(formatCurrency(d[campo[2]]));
+            localSpend.text(formatCurrency(d[campo[2]]));
 
             toolTip.style("left", (d3.event.pageX + 15) + "px")
                 .style("top", (d3.event.pageY - 75) + "px");
@@ -653,12 +653,12 @@ function main() {
             d3.select(labels[d.key]).transition().style("font-weight","bold").style("font-size","16");
             //d3.select(circles[d.key]).transition().style("fill-opacity",0.6);
             
-            var dados = [{label: campo[0], value: d[campo[0]], color: coresGrafico[0]},
+            /*var dados = [{label: campo[0], value: d[campo[0]], color: coresGrafico[0]},
 					  {label: campo[1], value: d[campo[1]], color: coresGrafico[1]},
 					  {label: campo[2], value: d[campo[2]], color: coresGrafico[2]}
 					  ];
             
-            graph.updateProp("data.content",dados);
+            graph.updateProp("data.content",dados);*/
 //            highlightPath(d);
 
 //            function highlightPath(d) {
