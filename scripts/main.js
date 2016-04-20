@@ -420,14 +420,16 @@ function main() {
 				var media = 0;
 				var i;
 				for(i = 1; i < d.depth; i++){
-					if(!isNaN(d["Nota"+i])){
-						media += d["Nota"+i];
+					if(isNaN(d["Nota"+i])){
+						d.linkColor = coresGrafico[2];
+						break;
 					}
+					media += d["Nota"+i];
 				}
 				console.log(i);
 				media = media/i;
 				console.log(media);
-				d.linkColor = escala(media/10);
+				if(d.linkColor !== coresGrafico[2]) d.linkColor = escala(media/10);
 			}
 			});
 /*            if (d.depth == 1) {
