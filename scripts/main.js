@@ -67,6 +67,43 @@ function main() {
     var header1 = d3.select(document.getElementById("header1")); //Texto logo abaixo do header do toolTip
     var header2 = d3.select(document.getElementById("header2")); //Texto abaixo do anterior
     
+    var toolTipAluno = d3.select(document.getElementById("toolTipAluno"));
+    
+    //Grafico dos nós folhas
+    var margin = {top: 10, right: 20, bottom: 30, left: 40};
+    var width = 400;
+    var height = 200;
+
+var formatPercent = d3.format(".0");
+
+var x = d3.scale.ordinal()
+    .rangeRoundBands([0, width], .1);
+
+var y = d3.scale.linear()
+    .range([height, 0]);
+
+var xAxis = d3.svg.axis()
+    .scale(x)
+    .orient("bottom");
+
+var yAxis = d3.svg.axis()
+    .scale(y)
+    .orient("left")
+    .tickFormat(formatPercent);
+
+var tip = d3.tip()
+  .attr('class', 'd3-tip')
+  .offset([-10, 0])
+  .html(function(d) {
+    return "<strong>Frequency:</strong> <span style='color:red'>" + d.frequency + "</span>";
+  })
+
+var grafBarra = d3.select(document.getElementById("grafico")).append("svg")
+    .attr("width", width + margin.left + margin.right)
+    .attr("height", height + margin.top + margin.bottom)
+  .append("g")
+    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+    
 /*    var graph = new d3pie("pieChart", { //Grafico de pizza
 	"header": {
 		"title": {
@@ -627,102 +664,83 @@ function main() {
         });
 
 
+	function converteDados(node){
+		var data = [];
+		for(var i = 0; i < node.depth-1; i++){
+			data[i] = {atividade: node["Level"+(i+1)],
+					nota: node["Nota"+(i+1)]
+					};
+		}
+		return data;
+	}
+
         function node_onMouseOver(d) {
 			
 			if (typeof d.target != "undefined") {
                 d = d.target;
             }
-
-            toolTip.transition()
+            
+            if (d.children || d._children){
+				toolTip.transition()
                 .duration(200)
                 .style("opacity", ".9");
-            header.text(d["source_Level1"]);
-            header1.text((d.depth > 1) ? d["source_Level2"] : "");
-            header2.html((d.depth > 2) ? d["source_Level3"] : "");
-            if (d.depth > 3) header2.html(header2.html() + " - " + d["source_Level4"]);
+				
+				header.text(d["source_Level1"]);
+				header1.text((d.depth > 1) ? d["source_Level2"] : "");
+				header2.html((d.depth > 2) ? d["source_Level3"] : "");
+				if (d.depth > 3) header2.html(header2.html() + " - " + d["source_Level4"]);
+            
+				fedSpend.text(formatCurrency(d[campo[0]]));
 
-            fedSpend.text(formatCurrency(d[campo[0]]));
+				stateSpend.text(formatCurrency(d[campo[1]]));
 
-            stateSpend.text(formatCurrency(d[campo[1]]));
+				localSpend.text(formatCurrency(d[campo[2]]));
+			}
+			else {
+				toolTipAluno.transition()
+				.duration(200)
+				.style("opacity", ".9");
+				
+				
+				var data = converteDados(d);
+				grafBarra.call(tip);
+				
+					console.log(data);
+					x.domain(data.map(function(d) { return d.atividade; }));
+					y.domain([0, 10]);
 
-            localSpend.text(formatCurrency(d[campo[2]]));
+					grafBarra.append("g")
+					.attr("class", "x axis")
+					.attr("transform", "translate(0," + height + ")")
+					.call(xAxis);
+
+					grafBarra.append("g")
+					.attr("class", "y axis")
+					.call(yAxis)
+
+					grafBarra.selectAll(".bar")
+					.data(data)
+					.enter().append("rect")
+					.attr("class", "bar")
+					.attr("x", function(d) { return x(d.atividade); })
+					.attr("width", x.rangeBand())
+					.attr("y", function(d) { return y(d.nota); })
+					.attr("height", function(d) { return height - y(d.nota); })
+					.on('mouseover', tip.show)
+					.on('mouseout', tip.hide)
+
+				
+			}
 
             toolTip.style("left", (d3.event.pageX + 15) + "px")
+                .style("top", (d3.event.pageY - 75) + "px");
+                
+            toolTipAluno.style("left", (d3.event.pageX + 15) + "px")
                 .style("top", (d3.event.pageY - 75) + "px");
 
             d3.select(labels[d.key]).transition().style("font-weight","bold").style("font-size","16");
 
-//Grafico começa aqui            
-            var margin = {top: 40, right: 20, bottom: 30, left: 40},
-    width = 960 - margin.left - margin.right,
-    height = 500 - margin.top - margin.bottom;
-
-var formatPercent = d3.format(".0%");
-
-var x = d3.scale.ordinal()
-    .rangeRoundBands([0, width], .1);
-
-var y = d3.scale.linear()
-    .range([height, 0]);
-
-var xAxis = d3.svg.axis()
-    .scale(x)
-    .orient("bottom");
-
-var yAxis = d3.svg.axis()
-    .scale(y)
-    .orient("left")
-    .tickFormat(formatPercent);
-
-var tip = d3.tip()
-  .attr('class', 'd3-tip')
-  .offset([-10, 0])
-  .html(function(d) {
-    return "<strong>Frequency:</strong> <span style='color:red'>" + d.frequency + "</span>";
-  })
-
-var svg = d3.select(document.getElementById("grafico")).append("svg")
-    .attr("width", width + margin.left + margin.right)
-    .attr("height", height + margin.top + margin.bottom)
-  .append("g")
-    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-
-svg.call(tip);
-
-
-
-d3.tsv("data/data.tsv", type, function(error, data) {
-  
-  
-  x.domain(data.map(function(d) { return d.letter; }));
-  y.domain([0, d3.max(data, function(d) { return d.frequency; })]);
-
-  svg.append("g")
-      .attr("class", "x axis")
-      .attr("transform", "translate(0," + height + ")")
-      .call(xAxis);
-
-  svg.append("g")
-      .attr("class", "y axis")
-      .call(yAxis)
-
-  svg.selectAll(".bar")
-      .data(data)
-    .enter().append("rect")
-      .attr("class", "bar")
-      .attr("x", function(d) { return x(d.letter); })
-      .attr("width", x.rangeBand())
-      .attr("y", function(d) { return y(d.frequency); })
-      .attr("height", function(d) { return height - y(d.frequency); })
-      .on('mouseover', tip.show)
-      .on('mouseout', tip.hide)
-
-});
-
-function type(d) {
-  d.frequency = +d.frequency;
-  return d;
-}
+//Grafico começa aqui
 
 
             //d3.select(circles[d.key]).transition().style("fill-opacity",0.6);
@@ -741,16 +759,25 @@ function type(d) {
 //                    highlightPath(d.parent);
 //                }
 //            }
-
-
-
         }
+        
+        function type(d) {
+			d.frequency = +d.frequency;
+			return d;
+		}
 
         function node_onMouseOut(d) {
             toolTip.transition()
                 .duration(500)
                 .style("opacity", "0");
-
+			
+			toolTipAluno.transition()
+                .duration(500)
+                .style("opacity", "0");
+            
+            grafBarra.selectAll(".bar")
+            .on('mouseover', tip.hide);
+                
             d3.select(labels[d.key]).transition().style("font-weight","normal").style("font-size","12");
             d3.select(circles[d.key]).transition().style("fill-opacity",0.3);
 //            noHighlightPath(d);
