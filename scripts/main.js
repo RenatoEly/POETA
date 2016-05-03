@@ -99,10 +99,11 @@ var tip = d3.tip()
   })
 
 var grafBarra = d3.select(document.getElementById("grafico")).append("svg")
-    .attr("width", width + margin.left + margin.right)
-    .attr("height", height + margin.top + margin.bottom)
-  .append("g")
-    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+				.attr("width", width + margin.left + margin.right)
+				.attr("height", height + margin.top + margin.bottom)
+				.append("g")
+				.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+				
     
 /*    var graph = new d3pie("pieChart", { //Grafico de pizza
 	"header": {
@@ -184,6 +185,7 @@ var grafBarra = d3.select(document.getElementById("grafico")).append("svg")
     var localSpend = d3.select(document.getElementById("localSpend")); //Subquadro "Local Funds" dentro do toolTip
 					//Todos os quadros e header's definidos aqui são declarados no proprio index.html
 
+	var detalhes = false;
     var federalButton = d3.select(document.getElementById("federalButton"));
     var stateButton = d3.select(document.getElementById("stateButton"));
     var localButton = d3.select(document.getElementById("localButton"));
@@ -280,20 +282,17 @@ var grafBarra = d3.select(document.getElementById("grafico")).append("svg")
 
             federalButton.on("click", function (d) {
                 toggleButtons(0);
-                spendField = "sum_Federal";
-                update(root);
+                detalhes = false;
             });
 
             stateButton.on("click", function (d) {
                 toggleButtons(1);
-                spendField = "sum_State";
-                update(root);
+                detalhes = true;
             });
 
             localButton.on("click", function (d) {
                 toggleButtons(2);
-                spendField = "sum_Local";
-                update(root);
+                detalhes = false;
             });
 
             for (var i = 0; i < sumFields.length; i++) {
@@ -666,8 +665,8 @@ var grafBarra = d3.select(document.getElementById("grafico")).append("svg")
 
 	function converteDados(node){
 		var data = [];
-		for(var i = 0; i < node.depth-1; i++){
-			data[i] = {atividade: node["Level"+(i+1)],
+		for(var i = 1; i < node.depth-1; i++){
+			data[i-1] = {atividade: node["Level"+(i+1)],
 					nota: node["Nota"+(i+1)]
 					};
 		}
@@ -681,6 +680,101 @@ var grafBarra = d3.select(document.getElementById("grafico")).append("svg")
             }
             
             if (d.children || d._children){
+				if (detalhes){
+					
+					var margin = {top: 20, right: 80, bottom: 30, left: 50},
+    width = 960 - margin.left - margin.right,
+    height = 500 - margin.top - margin.bottom;
+
+var parseDate = d3.time.format("%Y%m%d").parse;
+
+var x = d3.time.scale()
+    .range([0, width]);
+
+var y = d3.scale.linear()
+    .range([height, 0]);
+
+var color = d3.scale.category10();
+
+var xAxis = d3.svg.axis()
+    .scale(x)
+    .orient("bottom");
+
+var yAxis = d3.svg.axis()
+    .scale(y)
+    .orient("left");
+
+var line = d3.svg.line()
+    .interpolate("basis")
+    .x(function(d) { return x(d.date); })
+    .y(function(d) { return y(d.temperature); });
+
+var svg = d3.select("body").append("svg")
+    .attr("width", width + margin.left + margin.right)
+    .attr("height", height + margin.top + margin.bottom)
+  .append("g")
+    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+d3.tsv("data/dados.tsv", function(error, data) {
+  if (error) throw error;
+
+  color.domain(d3.keys(data[0]).filter(function(key) { return key !== "date"; }));
+
+  data.forEach(function(d) {
+    d.date = parseDate(d.date);
+  });
+
+  var cities = color.domain().map(function(name) {
+    return {
+      name: name,
+      values: data.map(function(d) {
+        return {date: d.date, temperature: +d[name]};
+      })
+    };
+  });
+
+  x.domain(d3.extent(data, function(d) { return d.date; }));
+
+  y.domain([
+    d3.min(cities, function(c) { return d3.min(c.values, function(v) { return v.temperature; }); }),
+    d3.max(cities, function(c) { return d3.max(c.values, function(v) { return v.temperature; }); })
+  ]);
+
+  svg.append("g")
+      .attr("class", "x axis")
+      .attr("transform", "translate(0," + height + ")")
+      .call(xAxis);
+
+  svg.append("g")
+      .attr("class", "y axis")
+      .call(yAxis)
+    .append("text")
+      .attr("transform", "rotate(-90)")
+      .attr("y", 6)
+      .attr("dy", ".71em")
+      .style("text-anchor", "end")
+      .text("Temperature (ºF)");
+
+  var city = svg.selectAll(".city")
+      .data(cities)
+    .enter().append("g")
+      .attr("class", "city");
+
+  city.append("path")
+      .attr("class", "line")
+      .attr("d", function(d) { return line(d.values); })
+      .style("stroke", function(d) { return color(d.name); });
+
+  city.append("text")
+      .datum(function(d) { return {name: d.name, value: d.values[d.values.length - 1]}; })
+      .attr("transform", function(d) { return "translate(" + x(d.value.date) + "," + y(d.value.temperature) + ")"; })
+      .attr("x", 3)
+      .attr("dy", ".35em")
+      .text(function(d) { return d.name; });
+});
+				}
+				else{
+					
 				toolTip.transition()
                 .duration(200)
                 .style("opacity", ".9");
@@ -695,20 +789,19 @@ var grafBarra = d3.select(document.getElementById("grafico")).append("svg")
 				stateSpend.text(formatCurrency(d[campo[1]]));
 
 				localSpend.text(formatCurrency(d[campo[2]]));
+				}
 			}
 			else {
 				toolTipAluno.transition()
 				.duration(200)
 				.style("opacity", ".9");
 				
-				
 				var data = converteDados(d);
 				grafBarra.call(tip);
 				
-					console.log(data);
 					x.domain(data.map(function(d) { return d.atividade; }));
 					y.domain([0, 10]);
-
+					
 					grafBarra.append("g")
 					.attr("class", "x axis")
 					.attr("transform", "translate(0," + height + ")")
@@ -716,8 +809,8 @@ var grafBarra = d3.select(document.getElementById("grafico")).append("svg")
 
 					grafBarra.append("g")
 					.attr("class", "y axis")
-					.call(yAxis)
-
+					.call(yAxis);
+					
 					grafBarra.selectAll(".bar")
 					.data(data)
 					.enter().append("rect")
@@ -728,8 +821,9 @@ var grafBarra = d3.select(document.getElementById("grafico")).append("svg")
 					.attr("height", function(d) { return height - y(d.nota); })
 					.on('mouseover', tip.show)
 					.on('mouseout', tip.hide)
+					
+				console.log(data);
 
-				
 			}
 
             toolTip.style("left", (d3.event.pageX + 15) + "px")
@@ -767,6 +861,9 @@ var grafBarra = d3.select(document.getElementById("grafico")).append("svg")
 		}
 
         function node_onMouseOut(d) {
+			grafBarra.selectAll(".bar").remove();
+			grafBarra.selectAll("g").remove();
+			
             toolTip.transition()
                 .duration(500)
                 .style("opacity", "0");
@@ -777,6 +874,7 @@ var grafBarra = d3.select(document.getElementById("grafico")).append("svg")
             
             grafBarra.selectAll(".bar")
             .on('mouseover', tip.hide);
+            
                 
             d3.select(labels[d.key]).transition().style("font-weight","normal").style("font-size","12");
             d3.select(circles[d.key]).transition().style("fill-opacity",0.3);
