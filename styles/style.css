@@ -381,12 +381,12 @@ div.selected {
   stroke-width: 1.5px;
 }
 
-div.tooltipGraf {
+div.tooltipGraf2 {
     position: absolute;
     text-align: left;
     pointer-events: none;
     background: #FFFFEF;
-    width: 960px;
+    width: 1100px;
     height: 500px;
     padding: 10px;
     border: 1px solid #D5D5D5;
