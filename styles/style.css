@@ -381,7 +381,7 @@ div.selected {
   stroke-width: 1.5px;
 }
 
-div.tooltipGraf2 {
+div.tooltipGraf {
     position: absolute;
     text-align: left;
     pointer-events: none;
