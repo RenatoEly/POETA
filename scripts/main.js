@@ -122,7 +122,7 @@ function geraGrafico(node){
 	}
 	
 	var matrix = [];
-	for(var i = 0; i < alunos.length; i++){
+	for(var i = 0; i < node.depth + 1; i++){
 		matrix[i] = [];
 	}
 	
@@ -139,7 +139,6 @@ function geraGrafico(node){
 	for(var i = 0; i < alunos.length; i++){
 		matrix[0][i+1] = 0;
 	}
-	console.log(matrix)
       data.addRows(matrix);
 
       var options = {
