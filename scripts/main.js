@@ -22,7 +22,11 @@
  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
  OTHER DEALINGS IN THE SOFTWARE.
 */
-
+ var toolTipAluno;
+ var toolTipGrafLinhas;
+ var toolTipGrafTempo;
+ var toolTip;
+    
 function main() {
 
     var m = [20, 120, 20, 120],
@@ -43,6 +47,9 @@ function main() {
 	//valores do dominio para escala de cores. Menor valor fica a primeira cor do array cores e o maior a segunda.
 	var dominio = [0,0.5,1];
 	
+	var escala = d3.scale.linear().range(cores);
+	escala.domain(dominio); //Parâmetro usado para definir a mudança de cores (Verde, Vermelho, amarelo)
+	
 	//Cores para o grafico. Nota >= 7, Nota < 7, Desistentes.
 	var coresGrafico = ["#00ff00","#ff0000","#c7dbe5"];
 
@@ -62,13 +69,14 @@ function main() {
 
     tree.children(function (d) { return d.values; }).size([h, w]);
 
-    var toolTip = d3.select(document.getElementById("toolTip")); //Todo o quadro que aparece ao passar o mouse em um nó
+    toolTip = d3.select(document.getElementById("toolTip")); //Todo o quadro que aparece ao passar o mouse em um nó
     var header = d3.select(document.getElementById("head"));	 //Texto que aparece no topo do toolTip
     var header1 = d3.select(document.getElementById("header1")); //Texto logo abaixo do header do toolTip
     var header2 = d3.select(document.getElementById("header2")); //Texto abaixo do anterior
     
-    var toolTipAluno = d3.select(document.getElementById("toolTipAluno"));
-    var toolTipGrafLinhas = d3.select(document.getElementById("toolTipGraf"));
+    toolTipAluno = d3.select(document.getElementById("toolTipAluno"));
+    toolTipGrafLinhas = d3.select(document.getElementById("toolTipGrafLinha"));
+    toolTipGrafTempo = d3.select(document.getElementById("toolTipGrafTempo"));
     
     //Grafico dos nós folhas
     var margin = {top: 10, right: 20, bottom: 30, left: 40};
@@ -108,8 +116,8 @@ var grafBarra = d3.select(document.getElementById("grafico")).append("svg")
 				
 
 //Grafico de linhas
-google.charts.load('current', {'packages':['line']});
-function geraGrafico(node){
+google.charts.load('current', {'packages':['line','timeline']});
+function geraGraficoLinhas(node){
       google.charts.setOnLoadCallback(drawChart(node));
 
     function drawChart(node) {
@@ -133,7 +141,6 @@ function geraGrafico(node){
 			matrix[i][j+1] = alunos[j]["Nota"+i]
 		}
 		aux = aux.parent  
-		console.log(matrix)
 	}
 	matrix[0][0] = '0';
 	for(var i = 0; i < alunos.length; i++){
@@ -159,6 +166,32 @@ function geraGrafico(node){
 
       chart.draw(data, options);
     }
+ }
+ 
+ function geraGraficoTempo(){
+	 google.charts.setOnLoadCallback(drawChart);
+      function drawChart() {
+        var container = document.getElementById('graficoTempo');
+        var chart = new google.visualization.Timeline(container);
+        var dataTable = new google.visualization.DataTable();
+
+        dataTable.addColumn({ type: 'string', id: 'Atividades' });
+        dataTable.addColumn({ type: 'string', id: 'Name' });
+        dataTable.addColumn({ type: 'date', id: 'Start' });
+        dataTable.addColumn({ type: 'date', id: 'End' });
+        dataTable.addRows([
+          [ '1','Ler Artigo 1',     new Date(2016, 4, 01), new Date(2016, 4, 03) ],
+          [ '2','Exercicio 1',      new Date(2016, 4, 03), new Date(2016, 4, 07) ],
+          [ '3','Exercicio 2',      new Date(2016, 4, 5), new Date(2016, 4, 14) ],
+          [ '4','Chat',             new Date(2016, 4, 11), new Date(2016, 4, 17) ],
+          [ '5','Exercicio 3',      new Date(2016, 4, 18), new Date(2016, 4, 19) ],
+          [ '6','Ler Artigo 2',     new Date(2016, 4, 21), new Date(2016, 4, 23) ],
+          [ '7','Exercicio 4',      new Date(2016, 4, 21), new Date(2016, 4, 25) ],
+          [ '8','Projeto 1',        new Date(2016, 4, 22), new Date(2016, 4, 26) ],
+          [ '9','Projeto Final',  new Date(2016, 4, 26), new Date(2016, 4, 31) ]]);
+
+        chart.draw(dataTable);
+      }
  }
 				
     
@@ -509,9 +542,6 @@ function geraGrafico(node){
         nodes.forEach(function (d) {
             d.y = d.depth * 170;  //Diminuí o tamanho da perna de um nó para o outro (25/03/2016)
             d.numChildren = (d.children) ? d.children.length : 0;
-			var escala = d3.scale.linear().range(cores);
-			
-			escala.domain(dominio); //Parâmetro usado para definir a mudança de cores (Verde, Vermelho, amarelo)
 			
 			if(d.numChildren > 0 || d._children){
 				d.linkColor = escala(d[campo[0]]/(d[campo[0]] + d[campo[1]] + d[campo[2]]));
@@ -746,16 +776,19 @@ function geraGrafico(node){
             
             if (d.children || d._children){
 				if (detalhes){
-					geraGrafico(d);
+					geraGraficoLinhas(d);
 					toolTipGrafLinhas.transition()
 					.duration(200)
-					.style("opacity", "2");
+					.style("opacity", "1");
+					
+					toolTipGrafLinhas.style("left", (d3.event.pageX + 15) + "px")
+                .style("top", (d3.event.pageY - 75) + "px");
 				}
 				else{
 					
 				toolTip.transition()
                 .duration(200)
-                .style("opacity", ".9");
+                .style("opacity", "1");
 				
 				header.text(d["source_Level1"]);
 				header1.text((d.depth > 1) ? d["source_Level2"] : "");
@@ -767,12 +800,25 @@ function geraGrafico(node){
 				stateSpend.text(formatCurrency(d[campo[1]]));
 
 				localSpend.text(formatCurrency(d[campo[2]]));
+				
+				 toolTip.style("left", (d3.event.pageX + 15) + "px")
+                .style("top", (d3.event.pageY - 75) + "px");
 				}
 			}
 			else {
+				if(detalhes){
+					geraGraficoTempo();
+					toolTipGrafTempo.transition()
+					.duration(200)
+					.style("opacity", "1");
+					
+					toolTipGrafTempo.style("left", (d3.event.pageX + 15) + "px")
+                .style("top", (d3.event.pageY - 75) + "px");
+				}
+				else{
 				toolTipAluno.transition()
 				.duration(200)
-				.style("opacity", ".9");
+				.style("opacity", "1");
 				
 				var data = converteDados(d);
 				grafBarra.call(tip);
@@ -797,22 +843,16 @@ function geraGrafico(node){
 					.attr("width", x.rangeBand())
 					.attr("y", function(d) { return y(d.nota); })
 					.attr("height", function(d) { return height - y(d.nota); })
+					.style("fill", function(d) { return escala(d.nota/10)})
 					.on('mouseover', tip.show)
 					.on('mouseout', tip.hide)
 					
-				console.log(data);
+					toolTipAluno.style("left", (d3.event.pageX + 15) + "px")
+                .style("top", (d3.event.pageY - 75) + "px");
+				}
 
 			}
-
-            toolTip.style("left", (d3.event.pageX + 15) + "px")
-                .style("top", (d3.event.pageY - 75) + "px");
-                
-            toolTipAluno.style("left", (d3.event.pageX + 15) + "px")
-                .style("top", (d3.event.pageY - 75) + "px");
-            
-            toolTipGrafLinhas.style("left", (d3.event.pageX + 15) + "px")
-                .style("top", (d3.event.pageY - 75) + "px");
-
+ 
             d3.select(labels[d.key]).transition().style("font-weight","bold").style("font-size","16");
 
 //Grafico começa aqui
@@ -856,6 +896,10 @@ function geraGrafico(node){
             toolTipGrafLinhas.transition()
                 .duration(500)
                 .style("opacity", "0");
+                
+            toolTipGrafTempo.transition()
+                .duration(500)
+                .style("opacity", "0");
             
             grafBarra.selectAll(".bar")
             .on('mouseover', tip.hide);
@@ -892,5 +936,43 @@ function geraGrafico(node){
         d3.selectAll(".button").attr("class",function (d,i) { return (i==index) ? "button selected" : "button"; });
         d3.selectAll(".tip").attr("class",function (d,i) { return (i==index) ? "tip selected" : "tip";});
     }
+}
 
+function mouseOverGraph(d){
+		switch(d){
+			case "linha":
+				if(toolTipGrafLinhas.style("opacity") != 0){
+					toolTipGrafLinhas.transition()
+					.duration(1)
+					.style("opacity","1");
+				}
+				break;
+			case "tempo":
+				if(toolTipGrafTempo.style("opacity") != 0){
+					toolTipGrafTempo.transition()
+					.duration(1)
+					.style("opacity","1");
+				}
+				break;
+		}
+}
+
+function mouseOutGraph(d){
+	console.log(d)
+	switch(d){
+		case "linha":
+			if(toolTipGrafLinhas.style("opacity") != 0){
+				toolTipGrafLinhas.transition()
+				.duration(500)
+				.style("opacity","0");
+			}
+			break;
+		case "tempo":
+			if(toolTipGrafTempo.style("opacity") != 0){
+				toolTipGrafTempo.transition()
+				.duration(500)
+				.style("opacity","0");
+			}
+			break;
+	}
 }

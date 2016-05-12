@@ -34,10 +34,10 @@
     <title>Federal Budget Data Visualization D3.js</title>
     <link type="text/css" rel="stylesheet" href="styles/style.css">
 
+	<script type="text/javascript" src="scripts/loader.js"></script>
     <script type="text/javascript" src="scripts/d3.min.js"></script>
     <script type="text/javascript" src="http://labratrevenge.com/d3-tip/javascripts/d3.tip.v0.6.3.js"></script>
     <script type="text/javascript" src="scripts/main.js"></script>
-    <script type="text/javascript" src="scripts/loader.js"></script>
 
 </head>
 
@@ -87,9 +87,16 @@
     </div>
 </div>
 
-<div id="toolTipGraf" class="tooltipGraf" style="opacity:0;">
+<div id="toolTipGrafLinha" class="tooltipGraf" style="opacity:0;" 
+	onmouseover="mouseOverGraph('linha')" onmouseout="mouseOutGraph('linha')">
 	<div id="headGraf" class="header"></div>
             <div id="graficoLinhas"></div>
+</div>
+
+<div id="toolTipGrafTempo" class="tooltipGraf" style="opacity:0;"
+	 onmouseover="mouseOverGraph('tempo')"  onmouseout="mouseOutGraph('tempo')">
+	<div id="headGraf" class="header"></div>
+            <div id="graficoTempo" class="tooltipGraf"></div>
 </div>
 
 

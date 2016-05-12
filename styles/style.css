@@ -26,7 +26,6 @@ OTHER DEALINGS IN THE SOFTWARE.
 */
 
 body {
-    overflow: auto;
     margin: 0;
     font-size: 14px;
     font-family: "Helvetica Neue", Helvetica;
@@ -60,11 +59,6 @@ body {
     top: 680px;
     right: 140px;
     text-align: right;
-}
-
-rect {
-    fill: none;
-    pointer-events: all;
 }
 
 pre {
@@ -137,28 +131,6 @@ div.tooltip {
     background: #FFFFEF;
     width: 400px;
     height: 135px;
-    padding: 10px;
-    border: 1px solid #D5D5D5;
-    font-family: arial,helvetica,sans-serif;
-    position: absolute;
-    font-size: 1.1em;
-    color: #333;
-    padding: 10px;
-    border-radius: 3px;
-    background: rgba(255,255,255,0.9);
-    color: #000;
-    box-shadow: 0 1px 5px rgba(0,0,0,0.4);
-    -moz-box-shadow: 0 1px 5px rgba(0,0,0,0.4);
-    border:1px solid rgba(200,200,200,0.85);
-}
-
-div.tooltipAluno {
-    position: absolute;
-    text-align: left;
-    pointer-events: none;
-    background: #FFFFEF;
-    width: 450px;
-    height: 300px;
     padding: 10px;
     border: 1px solid #D5D5D5;
     font-family: arial,helvetica,sans-serif;
@@ -334,14 +306,6 @@ div.selected {
   shape-rendering: crispEdges;
 }
 
-.bar {
-  fill: orange;
-}
-
-.bar:hover {
-  fill: orangered ;
-}
-
 .x.axis path {
   display: none;
 }
@@ -402,3 +366,26 @@ div.tooltipGraf {
     -moz-box-shadow: 0 1px 5px rgba(0,0,0,0.4);
     border:1px solid rgba(200,200,200,0.85);
 }
+
+div.tooltipAluno {
+    position: absolute;
+    text-align: left;
+    pointer-events: none;
+    background: #FFFFEF;
+    width: 450px;
+    height: 300px;
+    padding: 10px;
+    border: 1px solid #D5D5D5;
+    font-family: arial,helvetica,sans-serif;
+    position: absolute;
+    font-size: 1.1em;
+    color: #333;
+    padding: 10px;
+    border-radius: 3px;
+    background: rgba(255,255,255,0.9);
+    color: #000;
+    box-shadow: 0 1px 5px rgba(0,0,0,0.4);
+    -moz-box-shadow: 0 1px 5px rgba(0,0,0,0.4);
+    border:1px solid rgba(200,200,200,0.85);
+}
+*/
