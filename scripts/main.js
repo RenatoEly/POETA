@@ -168,9 +168,9 @@ function geraGraficoLinhas(node){
     }
  }
  
- function geraGraficoTempo(){
-	 google.charts.setOnLoadCallback(drawChart);
-      function drawChart() {
+ function geraGraficoTempo(node){
+	 google.charts.setOnLoadCallback(drawChart(node));
+      function drawChart(node) {
         var container = document.getElementById('graficoTempo');
         var chart = new google.visualization.Timeline(container);
         var dataTable = new google.visualization.DataTable();
@@ -179,21 +179,27 @@ function geraGraficoLinhas(node){
         dataTable.addColumn({ type: 'string', id: 'Name' });
         dataTable.addColumn({ type: 'date', id: 'Start' });
         dataTable.addColumn({ type: 'date', id: 'End' });
-        dataTable.addRows([
-          [ '1','Ler Artigo 1',     new Date(2016, 4, 01), new Date(2016, 4, 03) ],
-          [ '2','Exercicio 1',      new Date(2016, 4, 03), new Date(2016, 4, 07) ],
-          [ '3','Exercicio 2',      new Date(2016, 4, 5), new Date(2016, 4, 14) ],
-          [ '4','Chat',             new Date(2016, 4, 11), new Date(2016, 4, 17) ],
-          [ '5','Exercicio 3',      new Date(2016, 4, 18), new Date(2016, 4, 19) ],
-          [ '6','Ler Artigo 2',     new Date(2016, 4, 21), new Date(2016, 4, 23) ],
-          [ '7','Exercicio 4',      new Date(2016, 4, 21), new Date(2016, 4, 25) ],
-          [ '8','Projeto 1',        new Date(2016, 4, 22), new Date(2016, 4, 26) ],
-          [ '9','Projeto Final',  new Date(2016, 4, 26), new Date(2016, 4, 31) ]]);
+        
+        var matrix = [];
+		for(var i = 0; i < node.depth - 1; i++){
+			matrix[i] = [];
+		}
+		
+		var aux = node.parent;
+		for(var i = node.depth - 1; i > 0; i--){
+			matrix[i-1] = [i.toString(),aux.key, converteData(node["Data Inicio "+i]), converteData(node["Data Fim "+i])];
+			aux = aux.parent;
+		}
+		
+        dataTable.addRows(matrix);
 
         chart.draw(dataTable);
       }
  }
-				
+ 
+ function converteData(data){
+	 return new Date(Number(data.slice(6,10)), Number(data.slice(3,5)), Number(data.slice(0,2)));
+ }		
     
 /*    var graph = new d3pie("pieChart", { //Grafico de pizza
 	"header": {
@@ -807,7 +813,7 @@ function geraGraficoLinhas(node){
 			}
 			else {
 				if(detalhes){
-					geraGraficoTempo();
+					geraGraficoTempo(d);
 					toolTipGrafTempo.transition()
 					.duration(200)
 					.style("opacity", "1");
@@ -884,21 +890,21 @@ function geraGraficoLinhas(node){
 			grafBarra.selectAll("g").remove();
 			
             toolTip.transition()
-                .duration(500)
+                .duration(200)
                 .style("opacity", "0");
 			
 			toolTipAluno.transition()
-                .duration(500)
+                .duration(200)
                 .style("opacity", "0");
                 
             toolTipGrafLinhas.transition()
-                .duration(500)
+                .duration(200)
                 .style("opacity", "0")
                 .transition()
                 .style("left","-1400px")
                 
             toolTipGrafTempo.transition()
-                .duration(500)
+                .duration(200)
                 .style("opacity", "0")
                 .transition()
                 .style("left","-1400px")
@@ -958,12 +964,12 @@ function mouseOverGraph(d){
 }
 
 function mouseOutGraph(d){
-	console.log(d)
+	
 	switch(d){
 		case "linha":
 			if(toolTipGrafLinhas.style("opacity") != 0){
 				toolTipGrafLinhas.transition()
-				.duration(500)
+				.duration(200)
 				.style("opacity","0")
 				.transition()
                 .style("left","-1400px");
@@ -972,7 +978,7 @@ function mouseOutGraph(d){
 		case "tempo":
 			if(toolTipGrafTempo.style("opacity") != 0){
 				toolTipGrafTempo.transition()
-				.duration(500)
+				.duration(200)
 				.style("opacity","0")
 				.transition()
                 .style("left","-1400px");
