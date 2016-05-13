@@ -1,4 +1,4 @@
-/**
+ /**
 
 Copyright (c) 2014 BrightPoint Consulting, Inc.
 
@@ -26,6 +26,7 @@ OTHER DEALINGS IN THE SOFTWARE.
 */
 
 body {
+    overflow: auto;
     margin: 0;
     font-size: 14px;
     font-family: "Helvetica Neue", Helvetica;
@@ -59,6 +60,11 @@ body {
     top: 680px;
     right: 140px;
     text-align: right;
+}
+
+rect {
+    
+    pointer-events: all;
 }
 
 pre {
@@ -267,84 +273,13 @@ div.header4 {
 
 div.selected {
     color: #000;
-    background: #ffffff;
+    background: #e9e9e9;
     border-color: #AAA;
-    box-shadow: inset 0px 0px 0px rgba(0,0,0,0.2);
+    box-shadow: inset 0px 0px 4px rgba(0,0,0,0.2);
     padding-bottom:10px;
 }
 
-#federalTip {
-    color: #000;
-    background-color: rgba(0,255,0,0.9);
-    border-color: #AAA;
-    box-shadow: inset 0px 0px 0px rgba(0,0,0,0.4);
-    padding-bottom:10px;
-}
-
-#stateTip {
-    color: #000;
-    background-color: rgba(255,0,0,0.9);
-    border-color: #AAA;
-    box-shadow: inset 0px 0px 0px rgba(0,0,0,0.4);
-    padding-bottom:10px;
-}
-
-#localTip {
-    color: #000;
-    background-color: rgba(255,255,255,0.9);
-    border-color: #AAA;
-    box-shadow: inset 0px 0px 0px rgba(0,0,0,0.4);
-    padding-bottom:10px;
-}
-
-/*css do grafico*/
-
-.axis path,
-.axis line {
-  fill: none;
-  stroke: #000;
-  shape-rendering: crispEdges;
-}
-
-.x.axis path {
-  display: none;
-}
-
-.d3-tip {
-  line-height: 1;
-  font-weight: bold;
-  padding: 12px;
-  background: rgba(0, 0, 0, 0.8);
-  color: #fff;
-  border-radius: 2px;
-}
-
-/* Creates a small triangle extender for the tooltip */
-.d3-tip:after {
-  box-sizing: border-box;
-  display: inline;
-  font-size: 10px;
-  width: 100%;
-  line-height: 1;
-  color: rgba(0, 0, 0, 0.8);
-  content: "\25BC";
-  position: absolute;
-  text-align: center;
-}
-
-/* Style northward tooltips differently */
-.d3-tip.n:after {
-  margin: -1px 0 0 0;
-  top: 100%;
-  left: 0;
-}
-
-.line {
-  fill: none;
-  stroke: steelblue;
-  stroke-width: 1.5px;
-}
-
+/*divs que eu criei*/
 div.tooltipGraf {
     position: absolute;
     text-align: left;
@@ -388,4 +323,27 @@ div.tooltipAluno {
     -moz-box-shadow: 0 1px 5px rgba(0,0,0,0.4);
     border:1px solid rgba(200,200,200,0.85);
 }
-*/
+
+#federalTip {
+    color: #000;
+    background-color: rgba(0,255,0,0.9);
+    border-color: #AAA;
+    box-shadow: inset 0px 0px 0px rgba(0,0,0,0.4);
+    padding-bottom:10px;
+}
+
+#stateTip {
+    color: #000;
+    background-color: rgba(255,0,0,0.9);
+    border-color: #AAA;
+    box-shadow: inset 0px 0px 0px rgba(0,0,0,0.4);
+    padding-bottom:10px;
+}
+
+#localTip {
+    color: #000;
+    background-color: rgba(255,255,255,0.9);
+    border-color: #AAA;
+    box-shadow: inset 0px 0px 0px rgba(0,0,0,0.4);
+    padding-bottom:10px;
+}

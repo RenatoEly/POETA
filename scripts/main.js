@@ -785,7 +785,7 @@ function geraGraficoLinhas(node){
                 .style("top", (d3.event.pageY - 75) + "px");
 				}
 				else{
-					
+				
 				toolTip.transition()
                 .duration(200)
                 .style("opacity", "1");
@@ -844,8 +844,6 @@ function geraGraficoLinhas(node){
 					.attr("y", function(d) { return y(d.nota); })
 					.attr("height", function(d) { return height - y(d.nota); })
 					.style("fill", function(d) { return escala(d.nota/10)})
-					.on('mouseover', tip.show)
-					.on('mouseout', tip.hide)
 					
 					toolTipAluno.style("left", (d3.event.pageX + 15) + "px")
                 .style("top", (d3.event.pageY - 75) + "px");
@@ -895,14 +893,16 @@ function geraGraficoLinhas(node){
                 
             toolTipGrafLinhas.transition()
                 .duration(500)
-                .style("opacity", "0");
+                .style("opacity", "0")
+                .transition()
+                .style("left","-1400px")
                 
             toolTipGrafTempo.transition()
                 .duration(500)
-                .style("opacity", "0");
+                .style("opacity", "0")
+                .transition()
+                .style("left","-1400px")
             
-            grafBarra.selectAll(".bar")
-            .on('mouseover', tip.hide);
             
                 
             d3.select(labels[d.key]).transition().style("font-weight","normal").style("font-size","12");
@@ -964,14 +964,18 @@ function mouseOutGraph(d){
 			if(toolTipGrafLinhas.style("opacity") != 0){
 				toolTipGrafLinhas.transition()
 				.duration(500)
-				.style("opacity","0");
+				.style("opacity","0")
+				.transition()
+                .style("left","-1400px");
 			}
 			break;
 		case "tempo":
 			if(toolTipGrafTempo.style("opacity") != 0){
 				toolTipGrafTempo.transition()
 				.duration(500)
-				.style("opacity","0");
+				.style("opacity","0")
+				.transition()
+                .style("left","-1400px");
 			}
 			break;
 	}
