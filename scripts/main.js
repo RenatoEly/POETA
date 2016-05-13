@@ -46,9 +46,13 @@ function main() {
 	var cores=["#ff0000","#ffff00","#00ff00"];
 	//valores do dominio para escala de cores. Menor valor fica a primeira cor do array cores e o maior a segunda.
 	var dominio = [0,0.5,1];
+	var dominioNotas = [1,5,10];
 	
 	var escala = d3.scale.linear().range(cores);
 	escala.domain(dominio); //Parâmetro usado para definir a mudança de cores (Verde, Vermelho, amarelo)
+	
+	var escalaNota = d3.scale.linear().range(cores);
+	escalaNota.domain(dominioNotas);
 	
 	//Cores para o grafico. Nota >= 7, Nota < 7, Desistentes.
 	var coresGrafico = ["#00ff00","#ff0000","#c7dbe5"];
@@ -566,7 +570,7 @@ function geraGraficoLinhas(node){
 				
 				media = media/i;
 				
-				if(d.linkColor !== coresGrafico[2]) d.linkColor = escala(media/10);
+				if(d.linkColor !== coresGrafico[2]) d.linkColor = escalaNota(media);
 			}
 			});
 /*            if (d.depth == 1) {
@@ -849,7 +853,7 @@ function geraGraficoLinhas(node){
 					.attr("width", x.rangeBand())
 					.attr("y", function(d) { return y(d.nota); })
 					.attr("height", function(d) { return height - y(d.nota); })
-					.style("fill", function(d) { return escala(d.nota/10)})
+					.style("fill", function(d) { return escalaNota(d.nota)})
 					
 					toolTipAluno.style("left", (d3.event.pageX + 15) + "px")
                 .style("top", (d3.event.pageY - 75) + "px");
