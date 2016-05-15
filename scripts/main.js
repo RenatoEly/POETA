@@ -26,6 +26,57 @@
  var toolTipGrafLinhas;
  var toolTipGrafTempo;
  var toolTip;
+ var nodeAux;
+ var escalaNota;
+ var dominioNota;
+ var clickada = true;
+ 
+    var margin;
+    var width;
+    var height;
+
+var formatPercent;
+
+var x;
+
+var y;
+
+var xAxis;
+
+var yAxis;
+
+var tip;
+
+var grafBarra;
+ 
+function desenharGrafBarras(d){
+			var data = converteDados(d);
+				grafBarra.call(tip);
+				
+					x.domain(data.map(function(d) { return d.atv; }));
+					y.domain([0, 10]);
+					
+					grafBarra.append("g")
+					.attr("class", "x axis")
+					.attr("transform", "translate(0," + height + ")")
+					.call(xAxis);
+
+					grafBarra.append("g")
+					.attr("class", "y axis")
+					.call(yAxis);
+					
+					grafBarra.selectAll(".bar")
+					.data(data)
+					.enter().append("rect")
+					.attr("class", "bar")
+					.attr("x", function(d) { return x(d.atv); })
+					.attr("width", x.rangeBand())
+					.attr("y", function(d) { return y(d.nota); })
+					.attr("height", function(d) { return height - y(d.nota); })
+					.style("fill", function(d) { return escalaNota(d.nota)})
+					.on('mouseover', tip.show)
+					.on('mouseout', tip.hide)
+}
     
 function main() {
 
@@ -46,12 +97,12 @@ function main() {
 	var cores=["#ff0000","#ffff00","#00ff00"];
 	//valores do dominio para escala de cores. Menor valor fica a primeira cor do array cores e o maior a segunda.
 	var dominio = [0,0.5,1];
-	var dominioNotas = [1,5,10];
+	dominioNotas = [1,5,10];
 	
 	var escala = d3.scale.linear().range(cores);
 	escala.domain(dominio); //Parâmetro usado para definir a mudança de cores (Verde, Vermelho, amarelo)
 	
-	var escalaNota = d3.scale.linear().range(cores);
+	escalaNota = d3.scale.linear().range(cores);
 	escalaNota.domain(dominioNotas);
 	
 	//Cores para o grafico. Nota >= 7, Nota < 7, Desistentes.
@@ -82,42 +133,40 @@ function main() {
     toolTipGrafLinhas = d3.select(document.getElementById("toolTipGrafLinha"));
     toolTipGrafTempo = d3.select(document.getElementById("toolTipGrafTempo"));
     
-    //Grafico dos nós folhas
-    var margin = {top: 10, right: 20, bottom: 30, left: 40};
-    var width = 400;
-    var height = 200;
+     //Grafico dos nós folhas
+    margin = {top: 10, right: 20, bottom: 30, left: 40};
+    width = 400;
+    height = 200;
 
-var formatPercent = d3.format(".0");
+formatPercent = d3.format(".0");
 
-var x = d3.scale.ordinal()
+x = d3.scale.ordinal()
     .rangeRoundBands([0, width], .1);
 
-var y = d3.scale.linear()
+y = d3.scale.linear()
     .range([height, 0]);
 
-var xAxis = d3.svg.axis()
+xAxis = d3.svg.axis()
     .scale(x)
     .orient("bottom");
 
-var yAxis = d3.svg.axis()
+yAxis = d3.svg.axis()
     .scale(y)
     .orient("left")
     .tickFormat(formatPercent);
 
-var tip = d3.tip()
+tip = d3.tip()
   .attr('class', 'd3-tip')
   .offset([-10, 0])
   .html(function(d) {
-    return "<strong>Frequency:</strong> <span style='color:red'>" + d.frequency + "</span>";
+    return "<strong>"+d.atividade+":</strong> <span style='color:red'>" + d.nota + "</span>";
   })
 
-var grafBarra = d3.select(document.getElementById("grafico")).append("svg")
+grafBarra = d3.select(document.getElementById("grafico")).append("svg")
 				.attr("width", width + margin.left + margin.right)
 				.attr("height", height + margin.top + margin.bottom)
 				.append("g")
 				.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-
-				
 
 //Grafico de linhas
 google.charts.load('current', {'packages':['line','timeline']});
@@ -134,15 +183,15 @@ function geraGraficoLinhas(node){
 	}
 	
 	var matrix = [];
-	for(var i = 0; i < node.depth + 1; i++){
+	for(var i = 0; i < node.depth; i++){
 		matrix[i] = [];
 	}
 	
 	var aux = node;
-	for(var i = node.depth; i > 0; i--){
-		matrix[i][0] = aux.key;
+	for(var i = node.depth; i > 1; i--){
+		matrix[i-1][0] = aux.key;
 		for(var j = 0; j < alunos.length; j++){
-			matrix[i][j+1] = alunos[j]["Nota"+i]
+			matrix[i-1][j+1] = alunos[j]["Nota"+i]
 		}
 		aux = aux.parent  
 	}
@@ -185,21 +234,31 @@ function geraGraficoLinhas(node){
         dataTable.addColumn({ type: 'date', id: 'End' });
         
         var matrix = [];
-		for(var i = 0; i < node.depth - 1; i++){
+		for(var i = 0; i < node.depth - 2; i++){
 			matrix[i] = [];
 		}
 		
 		var aux = node.parent;
-		for(var i = node.depth - 1; i > 0; i--){
+		for(var i = node.depth - 2; i > 0; i--){
 			matrix[i-1] = [i.toString(),aux.key, converteData(node["Data Inicio "+i]), converteData(node["Data Fim "+i])];
 			aux = aux.parent;
 		}
 		
         dataTable.addRows(matrix);
-
         chart.draw(dataTable);
       }
  }
+ 
+ function toggleAll(d) {
+            if (d.values && d.values.actuals) {
+                d.values.actuals.forEach(toggleAll);
+                toggleNodes(d);
+            }
+            else if (d.values) {
+                d.values.forEach(toggleAll);
+                toggleNodes(d);
+            }
+        }
  
  function converteData(data){
 	 return new Date(Number(data.slice(6,10)), Number(data.slice(3,5)), Number(data.slice(0,2)));
@@ -370,9 +429,9 @@ function geraGraficoLinhas(node){
         // Initialize the display to show a few nodes.
         root.values.forEach(toggleAll);
 
-        toggleNodes(root.values[2]);
-        toggleNodes(root.values[2].values[0]);
-        toggleNodes(root.values[3]);
+        //toggleNodes(root.values[2]);
+        //toggleNodes(root.values[2].values[0]);
+        //toggleNodes(root.values[3]);
 
         update(root);
 
@@ -406,18 +465,6 @@ function geraGraficoLinhas(node){
             sumNodesCopia(root);
             
         }
-
-        function toggleAll(d) {
-            if (d.values && d.values.actuals) {
-                d.values.actuals.forEach(toggleAll);
-                toggleNodes(d);
-            }
-            else if (d.values) {
-                d.values.forEach(toggleAll);
-                toggleNodes(d);
-            }
-        }
-
 
     });
 
@@ -553,7 +600,10 @@ function geraGraficoLinhas(node){
             d.y = d.depth * 170;  //Diminuí o tamanho da perna de um nó para o outro (25/03/2016)
             d.numChildren = (d.children) ? d.children.length : 0;
 			
-			if(d.numChildren > 0 || d._children){
+			if(d.depth <= 1){
+				d.linkColor = "#e6f2ff";
+			}
+			else if(d.numChildren > 0 || d._children){
 				d.linkColor = escala(d[campo[0]]/(d[campo[0]] + d[campo[1]] + d[campo[2]]));
 			}
 			
@@ -605,24 +655,31 @@ function geraGraficoLinhas(node){
                 return "translate(" + source.y0 + "," + source.x0 + ")";
             })
             .on("click", function (d) {
-                if (d.numChildren > 50) {
-                    alert(d.key + " has too many departments (" + d.numChildren + ") to view at once.");
-                }
-                else {
-                    toggleNodes(d);
+				if(d.depth === 0) return
+                if(d.depth === 1){
+					toggleAll(d);
                     update(d);
-                }
+				}
+                else{
+					if(clickada){
+						exibirGrafico(d);
+					}
+					else{
+						esconderGrafico(d);
+					}
+					clickada = !clickada;
+				}
             });
 
         nodeEnter.append("svg:circle")
             .attr("r", 1e-6)
-            .on("mouseover", function (d) {
+            /*.on("mouseover", function (d) {
                 node_onMouseOver(d);
             })
             .on("mouseout", function (d) { node_onMouseOut(d)})
             .style("fill", function (d) {
 				return d.linkColor;
-				})
+				})*/
 //                circles[d.key] = this;
 //                return d.source ? d.source.linkColor : d.linkColor;
 //            })
@@ -651,8 +708,8 @@ function geraGraficoLinhas(node){
             })
             .style("fill-opacity", "0")
             .style("font-size","12")
-            .on("mouseover", function (d) {node_onMouseOver(d);})
-            .on("mouseout", function (d) { node_onMouseOut(d)});
+//            .on("mouseover", function (d) {node_onMouseOver(d);})
+//            .on("mouseout", function (d) { node_onMouseOut(d)});
 
         var nodeUpdate = node.transition()
             .duration(duration)
@@ -743,8 +800,8 @@ function geraGraficoLinhas(node){
             .style("stroke-width", 2*raio)//function (d, i) { return isNaN(nodeRadius(d.target[spendField])) ? 4: nodeRadius(d.target[spendField])*2; })
 //            .style("stroke-opacity",function (d) { return d.target[spendField] <= 0 ? .1 : ((d.source.depth + 1) / 4.5); })
             .style("stroke-linecap", "round")
-            .on("mouseover", function (d) {node_onMouseOver(d.source);})
-            .on("mouseout", function (d) { node_onMouseOut(d.source)});
+//            .on("mouseover", function (d) {node_onMouseOver(d.source);})
+//            .on("mouseout", function (d) { node_onMouseOut(d.source)});
 
         link.transition()
             .duration(duration)
@@ -768,17 +825,7 @@ function geraGraficoLinhas(node){
         });
 
 
-	function converteDados(node){
-		var data = [];
-		for(var i = 1; i < node.depth-1; i++){
-			data[i-1] = {atividade: node["Level"+(i+1)],
-					nota: node["Nota"+(i+1)]
-					};
-		}
-		return data;
-	}
-
-        function node_onMouseOver(d) {
+        function exibirGrafico(d) {
 			
 			if (typeof d.target != "undefined") {
                 d = d.target;
@@ -791,8 +838,8 @@ function geraGraficoLinhas(node){
 					.duration(200)
 					.style("opacity", "1");
 					
-					toolTipGrafLinhas.style("left", (d3.event.pageX + 15) + "px")
-                .style("top", (d3.event.pageY - 75) + "px");
+					toolTipGrafLinhas.style("left", (d3.event.pageX - 400) + "px")
+                .style("top", (d3.event.pageY + 30) + "px");
 				}
 				else{
 				
@@ -811,8 +858,8 @@ function geraGraficoLinhas(node){
 
 				localSpend.text(formatCurrency(d[campo[2]]));
 				
-				 toolTip.style("left", (d3.event.pageX + 15) + "px")
-                .style("top", (d3.event.pageY - 75) + "px");
+				 toolTip.style("left", (d3.event.pageX - 220) + "px")
+                .style("top", (d3.event.pageY - 60) + "px");
 				}
 			}
 			else {
@@ -822,41 +869,19 @@ function geraGraficoLinhas(node){
 					.duration(200)
 					.style("opacity", "1");
 					
-					toolTipGrafTempo.style("left", (d3.event.pageX + 15) + "px")
-                .style("top", (d3.event.pageY - 75) + "px");
+					toolTipGrafTempo.style("left", (d3.event.pageX - 700) + "px")
+                .style("top", (d3.event.pageY + 30) + "px");
 				}
 				else{
+				nodeAux = d;
 				toolTipAluno.transition()
 				.duration(200)
 				.style("opacity", "1");
 				
-				var data = converteDados(d);
-				grafBarra.call(tip);
+				desenharGrafBarras(d);
 				
-					x.domain(data.map(function(d) { return d.atividade; }));
-					y.domain([0, 10]);
-					
-					grafBarra.append("g")
-					.attr("class", "x axis")
-					.attr("transform", "translate(0," + height + ")")
-					.call(xAxis);
-
-					grafBarra.append("g")
-					.attr("class", "y axis")
-					.call(yAxis);
-					
-					grafBarra.selectAll(".bar")
-					.data(data)
-					.enter().append("rect")
-					.attr("class", "bar")
-					.attr("x", function(d) { return x(d.atividade); })
-					.attr("width", x.rangeBand())
-					.attr("y", function(d) { return y(d.nota); })
-					.attr("height", function(d) { return height - y(d.nota); })
-					.style("fill", function(d) { return escalaNota(d.nota)})
-					
-					toolTipAluno.style("left", (d3.event.pageX + 15) + "px")
-                .style("top", (d3.event.pageY - 75) + "px");
+				toolTipAluno.style("left", (d3.event.pageX - 220) + "px")
+                .style("top", (d3.event.pageY + 30) + "px");
 				}
 
 			}
@@ -889,32 +914,34 @@ function geraGraficoLinhas(node){
 			return d;
 		}
 
-        function node_onMouseOut(d) {
-			grafBarra.selectAll(".bar").remove();
-			grafBarra.selectAll("g").remove();
+        function esconderGrafico(d) {
 			
-            toolTip.transition()
-                .duration(200)
-                .style("opacity", "0");
+					toolTipGrafLinhas.transition()
+					.duration(200)
+					.style("opacity", "0")
+					.transition()
+					.duration(0)
+					.style("top","-1000px");
+				
+					 toolTip.transition()
+					.duration(200)
+					.style("opacity", "0");
+				
+					toolTipGrafTempo.transition()
+					.duration(200)
+					.style("opacity", "0")
+					.transition()
+					.duration(0)
+					.style("top","-1000px");
+				
+					toolTipAluno.transition()
+					.duration(200)
+					.style("opacity", "0")
+					.transition()
+					.duration(0)
+					.style("top","-1000px");
+					apagaGrafBarras();
 			
-			toolTipAluno.transition()
-                .duration(200)
-                .style("opacity", "0");
-                
-            toolTipGrafLinhas.transition()
-                .duration(200)
-                .style("opacity", "0")
-                .transition()
-                .style("left","-1400px")
-                
-            toolTipGrafTempo.transition()
-                .duration(200)
-                .style("opacity", "0")
-                .transition()
-                .style("left","-1400px")
-            
-            
-                
             d3.select(labels[d.key]).transition().style("font-weight","normal").style("font-size","12");
             d3.select(circles[d.key]).transition().style("fill-opacity",0.3);
 //            noHighlightPath(d);
@@ -948,45 +975,20 @@ function geraGraficoLinhas(node){
     }
 }
 
-function mouseOverGraph(d){
-		switch(d){
-			case "linha":
-				if(toolTipGrafLinhas.style("opacity") != 0){
-					toolTipGrafLinhas.transition()
-					.duration(1)
-					.style("opacity","1");
-				}
-				break;
-			case "tempo":
-				if(toolTipGrafTempo.style("opacity") != 0){
-					toolTipGrafTempo.transition()
-					.duration(1)
-					.style("opacity","1");
-				}
-				break;
-		}
-}
+function apagaGrafBarras(){
+	//if(){//verificar posição do mouse
+		grafBarra.selectAll(".bar").remove();
+		grafBarra.selectAll("g").remove();
+	//}
+}	
 
-function mouseOutGraph(d){
-	
-	switch(d){
-		case "linha":
-			if(toolTipGrafLinhas.style("opacity") != 0){
-				toolTipGrafLinhas.transition()
-				.duration(200)
-				.style("opacity","0")
-				.transition()
-                .style("left","-1400px");
-			}
-			break;
-		case "tempo":
-			if(toolTipGrafTempo.style("opacity") != 0){
-				toolTipGrafTempo.transition()
-				.duration(200)
-				.style("opacity","0")
-				.transition()
-                .style("left","-1400px");
-			}
-			break;
-	}
+function converteDados(node){
+		var data = [];
+		for(var i = 1; i < node.depth-1; i++){
+			data[i-1] = {atividade: node["Level"+(i+1)],
+					nota: node["Nota"+(i+1)],
+					atv: "Atv."+i
+					};
+		}
+		return data;
 }

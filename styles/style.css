@@ -26,7 +26,7 @@ OTHER DEALINGS IN THE SOFTWARE.
 */
 
 body {
-    overflow: auto;
+	
     margin: 0;
     font-size: 14px;
     font-family: "Helvetica Neue", Helvetica;
@@ -283,7 +283,6 @@ div.selected {
 div.tooltipGraf {
     position: absolute;
     text-align: left;
-    pointer-events: none;
     background: #FFFFEF;
     width: 1100px;
     height: 500px;
@@ -305,7 +304,6 @@ div.tooltipGraf {
 div.tooltipAluno {
     position: absolute;
     text-align: left;
-    pointer-events: none;
     background: #FFFFEF;
     width: 450px;
     height: 300px;
@@ -322,6 +320,18 @@ div.tooltipAluno {
     box-shadow: 0 1px 5px rgba(0,0,0,0.4);
     -moz-box-shadow: 0 1px 5px rgba(0,0,0,0.4);
     border:1px solid rgba(200,200,200,0.85);
+}
+
+div.tooltipGraf2 {
+    position: absolute;
+    text-align: left;
+    font-family: arial,helvetica,sans-serif;
+    position: absolute;
+    font-size: 1.1em;
+    padding: 10px;
+    border-radius: 3px;
+    background: rgba(255,255,255,0);
+    color: #000;
 }
 
 #federalTip {
