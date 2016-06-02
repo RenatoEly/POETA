@@ -22,12 +22,12 @@
  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
  OTHER DEALINGS IN THE SOFTWARE.
 */
- var toolTipAluno;
- var toolTipGrafLinhas;
- var toolTipGrafTempo;
- var toolTip;
+ var toolTipAluno; //Div html que contem o grafico de barras dos nós alunos
+ var toolTipGrafLinhas; //Div html que contem o grafico de linhas dos nós atividades
+ var toolTipGrafTempo; //Div html que contem o grafico de tempo dos nós alunos
+ var toolTip; //Div html que contem as informações das notas nos nós atividades
  var nodeAux;
- var escalaNota;
+ var escalaNota; 
  var dominioNota;
  var clickada = true;
  
@@ -35,20 +35,52 @@
     var width;
     var height;
 
-var formatPercent;
 
+
+//Variáveis usadas para desenhar o grafico de barras nos nós alunos
 var x;
-
 var y;
-
 var xAxis;
-
 var yAxis;
-
 var tip;
-
 var grafBarra;
- 
+
+function criarGrafBarras(){
+    margin = {top: 10, right: 20, bottom: 30, left: 40};
+    width = 400;
+    height = 200;
+
+	formatPercent = d3.format(".0");
+
+	x = d3.scale.ordinal()
+		.rangeRoundBands([0, width], .1);
+
+	y = d3.scale.linear()
+		.range([height, 0]);
+
+	xAxis = d3.svg.axis()
+		.scale(x)
+		.orient("bottom");
+
+	yAxis = d3.svg.axis()
+		.scale(y)
+		.orient("left")
+		.tickFormat(formatPercent);
+
+	tip = d3.tip()
+		.attr('class', 'd3-tip')
+		.offset([-10, 0])
+		.html(function(d) {
+		return "<strong>"+d.atividade+":</strong> <span style='color:red'>" + d.nota + "</span>";
+	})
+
+	grafBarra = d3.select(document.getElementById("grafico")).append("svg")
+		.attr("width", width + margin.left + margin.right)
+		.attr("height", height + margin.top + margin.bottom)
+		.append("g")
+		.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+}
+
 function desenharGrafBarras(d){
 			var data = converteDados(d);
 				grafBarra.call(tip);
@@ -81,14 +113,14 @@ function desenharGrafBarras(d){
 function main() {
 
     var m = [20, 120, 20, 120],
-        w = 2280 - m[1] - m[3],
+        w = 4280 - m[1] - m[3],
         h = 900 - m[0] - m[2],
         i = 0,
         root = {};
 	var raio = 10;
     var spendField = "sum_Federal";
     var sumFields = ["Federal", "GovXFer", "State", "Local"];
-    var sourceFields = ["Category", "Level1", "Level2", "Level3", "Level4", "Level5", "Level6", "Level7", "Level8", "Level9", "Level10"];
+    var sourceFields = ["Category", "Level1", "Level2", "Level3", "Level4", "Level5", "Level6", "Level7", "Level8", "Level9", "Level10", "Level11", "Level12", "Level13", "Level14", "Level15", "Level16", "Level17", "Level18"];
 	var campo = ["Nota >= 7","Nota < 7","Desistentes"];
 	
 	//Atributo que será usado para calcular a cor dos nós
@@ -112,7 +144,6 @@ function main() {
         "#9B2C67", "#982B9A", "#692DA7", "#5725AA", "#4823AF",
         "#d7b5d8", "#dd1c77", "#5A0C7A", "#5A0C7A"];
 
-    var formatNumber = d3.format(",.2f");
     var formatCurrency = function (d) {
         return d
     };
@@ -133,40 +164,7 @@ function main() {
     toolTipGrafLinhas = d3.select(document.getElementById("toolTipGrafLinha"));
     toolTipGrafTempo = d3.select(document.getElementById("toolTipGrafTempo"));
     
-     //Grafico dos nós folhas
-    margin = {top: 10, right: 20, bottom: 30, left: 40};
-    width = 400;
-    height = 200;
-
-formatPercent = d3.format(".0");
-
-x = d3.scale.ordinal()
-    .rangeRoundBands([0, width], .1);
-
-y = d3.scale.linear()
-    .range([height, 0]);
-
-xAxis = d3.svg.axis()
-    .scale(x)
-    .orient("bottom");
-
-yAxis = d3.svg.axis()
-    .scale(y)
-    .orient("left")
-    .tickFormat(formatPercent);
-
-tip = d3.tip()
-  .attr('class', 'd3-tip')
-  .offset([-10, 0])
-  .html(function(d) {
-    return "<strong>"+d.atividade+":</strong> <span style='color:red'>" + d.nota + "</span>";
-  })
-
-grafBarra = d3.select(document.getElementById("grafico")).append("svg")
-				.attr("width", width + margin.left + margin.right)
-				.attr("height", height + margin.top + margin.bottom)
-				.append("g")
-				.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+     criarGrafBarras();
 
 //Grafico de linhas
 google.charts.load('current', {'packages':['line','timeline']});
@@ -179,7 +177,7 @@ function geraGraficoLinhas(node){
       var data = new google.visualization.DataTable();
       data.addColumn('string', 'Atividades');
       for(var i = 0; i < alunos.length; i++){
-		data.addColumn('number', alunos[i].Level10);
+		data.addColumn('number', alunos[i].Level18);
 	}
 	
 	var matrix = [];
@@ -263,79 +261,6 @@ function geraGraficoLinhas(node){
  function converteData(data){
 	 return new Date(Number(data.slice(6,10)), Number(data.slice(3,5)), Number(data.slice(0,2)));
  }		
-    
-/*    var graph = new d3pie("pieChart", { //Grafico de pizza
-	"header": {
-		"title": {
-			"text": "Distribuição das notas",
-			"fontSize": 15,
-			"font": "verdana"
-		},
-		"subtitle": {
-			"color": "#999999",
-			"fontSize": 10,
-			"font": "verdana"
-		},
-		"titleSubtitlePadding": 0
-	},
-	"footer": {
-		"color": "#999999",
-		"fontSize": 11,
-		"font": "open sans",
-		"location": "bottom-center"
-	},
-	"size": {
-		"canvasHeight": 300,
-		"canvasWidth": 400,
-		"pieOuterRadius": "90%"
-	},
-	"data": {
-		"content": []
-	},
-	"labels": {
-		"outer": {
-			"pieDistance": 32
-		},
-		"inner": {
-			"format": "value"
-		},
-		"mainLabel": {
-			"font": "verdana",
-			"fontSize": 12
-		},
-		"percentage": {
-			"color": "#ffffff",
-			"font": "verdana",
-			"decimalPlaces": 0
-		},
-		"value": {
-			"color": "#000000",
-			"font": "verdana",
-			"fontSize": 12
-		},
-		"lines": {
-			"enabled": true,
-			"style": "straight"
-		},
-		"truncation": {
-			"enabled": true
-		}
-	},
-	"tooltips": {
-		"enabled": true,
-		"type": "placeholder",
-		"string": " {percentage}%"
-	},
-	"effects": {
-		"load": {
-			"speed": 400
-		},
-		"pullOutSegmentOnClick": {
-			"effect": "linear",
-			"speed": 400
-		}
-	}
-}); */
 
     var fedSpend = d3.select(document.getElementById("fedSpend")); //Subquadro "Federal Funds" dentro do toolTip
 
@@ -348,10 +273,6 @@ function geraGraficoLinhas(node){
     var federalButton = d3.select(document.getElementById("federalButton"));
     var stateButton = d3.select(document.getElementById("stateButton"));
     var localButton = d3.select(document.getElementById("localButton"));
-    //var federalTip = d3.select(document.getElementById("federalTip"));
-    //var stateTip = d3.select(document.getElementById("stateTip"));
-    //var localTip = d3.select(document.getElementById("localTip"));
-
 
     var diagonal = d3.svg.diagonal()
         .projection(function (d) {
@@ -364,23 +285,17 @@ function geraGraficoLinhas(node){
         .append("svg:g")
         .attr("transform", "translate(" + m[3] + "," + m[0] + ")");
 
-    var levelCeil=[{},{},{},{},{},{},{},{},{},{},{}];   //Acrescentei Mais Nós (Níveis de Célula) 25/03/2016
+    var levelCeil=[{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{}];   //Acrescentei Mais Nós (Níveis de Célula) 25/03/2016
 
     var nodeRadius;
 
-    d3.csv("data/FederalBudget_2013.csv", function (csv) {
+    d3.csv("data/DataBase.csv", function (csv) {
 
         var data = [];
 
         //Remove all zero values nodes
         csv.forEach(function (d) {
-            var t = 0;
-            for (var i = 0; i < sumFields.length; i++) {
-                t += Number(d[sumFields[i]]);
-            }
-            if (t > 0) {
                 data.push(d);
-            }
         })
 
         var nest = d3.nest()
@@ -393,46 +308,83 @@ function geraGraficoLinhas(node){
             .key(function (d) {
                 return d.Level3;
             })
-            .key(function (d) {   //======================== 
-                return d.Level4;  //Acrescentei este level  
-            })                    //========================
-            .key(function (d) {   //======================== 
-                return d.Level5;  //Acrescentei este level  
-            })                    //========================
-            .key(function (d) {   //======================== 
-                return d.Level6;  //Acrescentei este level  
-            })                    //========================
-            .key(function (d) {   //======================== 
-                return d.Level7;  //Acrescentei este level  
-            })                    //========================
-            .key(function (d) {   //======================== 
-                return d.Level8;  //Acrescentei este level  
-            })                    //========================
-            .key(function (d) {   //======================== 
-                return d.Level9;  //Acrescentei este level  
+            .key(function (d) {  
+                return d.Level4; 
+            })                   
+            .key(function (d) {  
+                return d.Level5; 
+            })                   
+            .key(function (d) {  
+                return d.Level6; 
+            })                   
+            .key(function (d) {  
+                return d.Level7; 
+            })                   
+            .key(function (d) {  
+                return d.Level8; 
+            })                   
+            .key(function (d) {  
+                return d.Level9; 
+            })
+            .key(function (d) {
+                return d.Level10;
+            })
+            .key(function (d) {
+                return d.Level11;
+            })
+            .key(function (d) {
+                return d.Level12;
+            })
+            .key(function (d) {  
+                return d.Level13; 
+            })                   
+            .key(function (d) {  
+                return d.Level14; 
+            })                   
+            .key(function (d) {  
+                return d.Level15; 
+            })                   
+            .key(function (d) {  
+                return d.Level16; 
+            })                   
+            .key(function (d) {  
+                return d.Level17; 
             })
             .entries(data);
 
         root = {};
         root.values = nest;
+        console.log(root);
+        removeEmptyNodes(root,null,0);
         root.x0 = h / 2;
         root.y0 = 0;
 
         var nodes = tree.nodes(root).reverse();
-
+		console.log(root);
         tree.children(function (d) {
             return d.children;
         });
-
+        
+        function removeEmptyNodes(node,parent,id) {
+		if(!node.values) return
+        if(node.key == ""){
+			var tam = parent.values.length;
+			for(var k = 0; k < node.values.length-1; k++){
+				parent.values[k+tam] = parent.values[id+k+1];
+			}
+			for(var j = 0; j < node.values.length; j++){
+				parent.values[id+j] = node.values[j];
+			}
+		}
+		for(var i = 0; i < node.values.length; i++){
+			removeEmptyNodes(node.values[i],node,i);
+		}
+    }
+		
         initialize();
 
         // Initialize the display to show a few nodes.
         root.values.forEach(toggleAll);
-
-        //toggleNodes(root.values[2]);
-        //toggleNodes(root.values[2].values[0]);
-        //toggleNodes(root.values[3]);
-
         update(root);
 
         toggleButtons(0);
@@ -459,13 +411,9 @@ function geraGraficoLinhas(node){
                     levelCeil[y]["sum_" + sumFields[i]] = 0;
                 }
             }
-
-           // sumNodes(root.children);
 	    setAnimacao(root.children);
             sumNodesCopia(root);
-            
         }
-
     });
 
     function setSourceFields(child, parent) {
@@ -480,36 +428,6 @@ function geraGraficoLinhas(node){
         }
 
     }
-
-//   function sumNodes(nodes) {
-//        for (var y = 0; y < nodes.length; y++) {
-//            var node = nodes[y];
-//            if (node.children) {
-//                sumNodes(node.children);
-//                for (var z = 0; z < node.children.length; z++) {
- //                   var child = node.children[z];
-//                    for (var i = 0; i < sumFields.length; i++) {
-//                        if (isNaN(node["sum_" + sumFields[i]])) node["sum_" + sumFields[i]] = 0;
-//                        node["sum_" + sumFields[i]] += Number(child["sum_" + sumFields[i]]);
-                        //if ((node.parent)) {
-                           // levelCeil[node.depth-1]["sum_" + sumFields[i]] = Math.max(levelCeil[node.depth-1]["sum_" + sumFields[i]], Number(node["sum_" + sumFields[i]]));
-                            //setSourceFields(node, node.parent);
-                        //}
-//                    }
-//                }
-//            }
-//            else {
-//                for (var i = 0; i < sumFields.length; i++) {
-//                    node["sum_" + sumFields[i]] = Number(node[sumFields[i]]);
-//                    if (isNaN(node["sum_" + sumFields[i]])) {
-//                        node["sum_" + sumFields[i]] = 0;
-//                    }
-//                }
-//           }
-           // setSourceFields(node, node.parent);
- //       }
-//    }
-    
 
    function setAnimacao(nodes) {
         for (var y = 0; y < nodes.length; y++) {
@@ -592,7 +510,6 @@ function geraGraficoLinhas(node){
 
         nodeRadius = d3.scale.sqrt()
             .domain([0, levelCeil[0][spendField]])
-            //.range([1, 40]);
             .range([8, 8]);
 
         // Normalize for fixed-depth.
@@ -623,31 +540,11 @@ function geraGraficoLinhas(node){
 				if(d.linkColor !== coresGrafico[2]) d.linkColor = escalaNota(media);
 			}
 			});
-/*            if (d.depth == 1) {
-                d.linkColor = colors[(depthCounter % (colors.length - 1))];
-                depthCounter++;
-            }
-            if (d.numChildren == 0 && d._children) d.numChildren = d._children.length;
-
-        });
-*/
-        //Set link colors based on parent color
-/*        nodes.forEach(function (d) {
-            var obj = d;
-            while ((obj.source && obj.source.depth > 1) || obj.depth > 1) {
-                obj = (obj.source) ? obj.source.parent : obj.parent;
-            }
-            d.linkColor = (obj.source) ? obj.source.linkColor : obj.linkColor;
-
-        });*/
-
-        // Update the nodes…
         var node = svg.selectAll("g.node")
             .data(nodes, function (d) {
                 return d.id || (d.id = ++i);
             });
 
-        // Enter any new nodes at the parent's previous position.
         var nodeEnter = node.enter().append("svg:g")
             .attr("class", "node")
             .attr("id",function (d) { return "node_" + d.key })
@@ -673,21 +570,9 @@ function geraGraficoLinhas(node){
 
         nodeEnter.append("svg:circle")
             .attr("r", 1e-6)
-            /*.on("mouseover", function (d) {
-                node_onMouseOver(d);
-            })
-            .on("mouseout", function (d) { node_onMouseOut(d)})
-            .style("fill", function (d) {
-				return d.linkColor;
-				})*/
-//                circles[d.key] = this;
-//                return d.source ? d.source.linkColor : d.linkColor;
-//            })
             .style("fill-opacity", ".8")
             .style("stroke", function (d) {
 				return "#000000";
-				//return d.linkColor;
-//                return d.source ? d.source.linkColor : d.linkColor;
             });
 
         nodeEnter.append("svg:text")
@@ -701,15 +586,12 @@ function geraGraficoLinhas(node){
                 return d.children || d._children ? "end" : "start";
             })
             .text(function (d) {
-                //var ret = (d.depth == 4) ? d.Level4 : d.key;
-                var ret = (d.depth == 10) ? d.Level10 : d.key; //Mudei esta linha, acrescentando o level 9
+                var ret = (!(d.children || d._children)) ? d.Level18 : d.key; //Mudei esta linha, acrescentando o level 9
                 ret = (String(ret).length > 25) ? String(ret).substr(0, 22) + "..." : ret;
                 return ret;
             })
             .style("fill-opacity", "0")
             .style("font-size","12")
-//            .on("mouseover", function (d) {node_onMouseOver(d);})
-//            .on("mouseout", function (d) { node_onMouseOut(d)});
 
         var nodeUpdate = node.transition()
             .duration(duration)
@@ -723,14 +605,11 @@ function geraGraficoLinhas(node){
             });
 
         nodeUpdate.select("circle")
-            .attr("r", raio+10)//function (d) { return isNaN(nodeRadius(d[spendField])) ? 2: nodeRadius(d[spendField]); })
+            .attr("r", raio+10)
             .style("fill", function (d) {
 				return d.linkColor;
 				})
-//				return d.source ? d.source.linkColor : d.linkColor 
-//				})
             .style("fill-opacity", 1
-//			function (d) { return ((d.depth + 1) / 5);}
 			);
 
         nodeUpdate.select("text")
@@ -776,7 +655,6 @@ function geraGraficoLinhas(node){
 				.attr("y1", "0%")
 				.attr("x2", "100%")
 				.attr("y2", "0%")
-//				.attr("spreadMethod", "pad");
 				
 				gradient.append("stop")
 			    .attr("offset", "0%")
@@ -789,24 +667,14 @@ function geraGraficoLinhas(node){
 			    .attr("stop-opacity", 1);
                 
 			   	return "url(#gradient_"+d.target.id+")"
-/*				if (d.source.depth == 0) {
-                    rootCounter++;
-                    return (d.source.children[rootCounter - 1].linkColor);
-                }
-                else {
-                    return (d.source) ? d.source.linkColor : d.linkColor;
-                }*/
             })
-            .style("stroke-width", 2*raio)//function (d, i) { return isNaN(nodeRadius(d.target[spendField])) ? 4: nodeRadius(d.target[spendField])*2; })
-//            .style("stroke-opacity",function (d) { return d.target[spendField] <= 0 ? .1 : ((d.source.depth + 1) / 4.5); })
+            .style("stroke-width", 2*raio)
             .style("stroke-linecap", "round")
-//            .on("mouseover", function (d) {node_onMouseOver(d.source);})
-//            .on("mouseout", function (d) { node_onMouseOut(d.source)});
 
         link.transition()
             .duration(duration)
             .attr("d", diagonal)
-            .style("stroke-width", 2*raio)//function (d, i) { return isNaN(nodeRadius(d.target[spendField])) ? 4: nodeRadius(d.target[spendField])*2; })
+            .style("stroke-width", 2*raio)
             .style("stroke-opacity",function (d) {
                 var ret = ((d.source.depth + 1) / 4.5)
                 if (d.target[spendField] <= 0) ret = .1;
@@ -887,26 +755,6 @@ function geraGraficoLinhas(node){
 			}
  
             d3.select(labels[d.key]).transition().style("font-weight","bold").style("font-size","16");
-
-//Grafico começa aqui
-
-
-            //d3.select(circles[d.key]).transition().style("fill-opacity",0.6);
-            
-            /*var dados = [{label: campo[0], value: d[campo[0]], color: coresGrafico[0]},
-					  {label: campo[1], value: d[campo[1]], color: coresGrafico[1]},
-					  {label: campo[2], value: d[campo[2]], color: coresGrafico[2]}
-					  ];
-            
-            graph.updateProp("data.content",dados);*/
-//            highlightPath(d);
-
-//            function highlightPath(d) {
-//                if (d) {
-//                    d3.select(paths[d.key]).style("stroke-opacity",function (d) {return d.target[spendField] <= 0 ? .1 + .3 : ((d.source.depth + 1) / 4.5) + .3;});
-//                    highlightPath(d.parent);
-//                }
-//            }
         }
         
         function type(d) {
@@ -944,20 +792,8 @@ function geraGraficoLinhas(node){
 			
             d3.select(labels[d.key]).transition().style("font-weight","normal").style("font-size","12");
             d3.select(circles[d.key]).transition().style("fill-opacity",0.3);
-//            noHighlightPath(d);
-
-//            function noHighlightPath(d) {
-//                if (d) {
-//                    d3.select(paths[d.key]).style("stroke-opacity",function (d) {return d.target[spendField] <= 0 ? .1 : ((d.source.depth + 1) / 4.5);});
-//                    noHighlightPath(d.parent);
- //              }
-//            }
         }
-
-
     }
-
-
 
     function toggleNodes(d) {
         if (d.children) {
@@ -976,10 +812,8 @@ function geraGraficoLinhas(node){
 }
 
 function apagaGrafBarras(){
-	//if(){//verificar posição do mouse
 		grafBarra.selectAll(".bar").remove();
 		grafBarra.selectAll("g").remove();
-	//}
 }	
 
 function converteDados(node){
