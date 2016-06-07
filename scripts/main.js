@@ -189,7 +189,7 @@ function geraGraficoLinhas(node){
 	for(var i = node.depth; i > 1; i--){
 		matrix[i-1][0] = aux.key;
 		for(var j = 0; j < alunos.length; j++){
-			matrix[i-1][j+1] = alunos[j]["Nota"+i]
+			matrix[i-1][j+1] = alunos[j]["Nota"+(i-1)]
 		}
 		aux = aux.parent  
 	}
@@ -354,20 +354,18 @@ function geraGraficoLinhas(node){
 
         root = {};
         root.values = nest;
-        console.log(root);
         removeEmptyNodes(root,null,0);
         root.x0 = h / 2;
         root.y0 = 0;
 
         var nodes = tree.nodes(root).reverse();
-		console.log(root);
         tree.children(function (d) {
             return d.children;
         });
         
         function removeEmptyNodes(node,parent,id) {
 		if(!node.values) return
-        if(node.key == ""){
+        if(node.key === ""){
 			var tam = parent.values.length;
 			for(var k = 0; k < node.values.length-1; k++){
 				parent.values[k+tam] = parent.values[id+k+1];
@@ -375,9 +373,12 @@ function geraGraficoLinhas(node){
 			for(var j = 0; j < node.values.length; j++){
 				parent.values[id+j] = node.values[j];
 			}
+			node = parent.values[id];
+			if(!node.values) return
 		}
 		for(var i = 0; i < node.values.length; i++){
 			removeEmptyNodes(node.values[i],node,i);
+			if(node.values[i].key === "") i--;
 		}
     }
 		
@@ -456,24 +457,26 @@ function geraGraficoLinhas(node){
     function sumNodesCopia(root) {
 		var pai = {};
 		var folhas = [];
+		var depth;
         getLeafs(root,folhas);
         for(var i = 0; i < folhas.length; i++){
 			setSourceFields(folhas[i], folhas[i].parent);
 			pai = folhas[i].parent;
-			while(pai.depth >= 1){
+			while(pai.depth > 1){
 				setSourceFields(pai, pai.parent);
 				if (isNaN(pai[campo[2]])) pai[campo[2]] = 0;
 				if (isNaN(pai[campo[1]])) pai[campo[1]] = 0;
 				if (isNaN(pai[campo[0]])) pai[campo[0]] = 0;
-				folhas[i]["Nota"+pai.depth] = Number(folhas[i]["Nota"+pai.depth]);
+				depth = pai.depth-1;
+				folhas[i]["Nota"+depth] = Number(folhas[i]["Nota"+depth]);
 				
-				if(isNaN(folhas[i]["Nota"+pai.depth])){ 
+				if(isNaN(folhas[i]["Nota"+depth])){ 
 					pai[campo[2]]++;
 				}
-				else if(folhas[i]["Nota"+pai.depth] < 7){
+				else if(folhas[i]["Nota"+depth] < 7){
 					pai[campo[1]]++;
 				}
-				else if(folhas[i]["Nota"+pai.depth] >= 7){
+				else if(folhas[i]["Nota"+depth] >= 7){
 					pai[campo[0]]++;
 				}
 				pai = pai.parent;
@@ -527,7 +530,7 @@ function geraGraficoLinhas(node){
 			else{
 				var media = 0;
 				var i;
-				for(i = 1; i < d.depth; i++){
+				for(i = 1; i < d.depth-1; i++){
 					if(isNaN(d["Nota"+i])){
 						d.linkColor = coresGrafico[2];
 						break;
@@ -820,7 +823,7 @@ function converteDados(node){
 		var data = [];
 		for(var i = 1; i < node.depth-1; i++){
 			data[i-1] = {atividade: node["Level"+(i+1)],
-					nota: node["Nota"+(i+1)],
+					nota: node["Nota"+(i)],
 					atv: "Atv."+i
 					};
 		}
