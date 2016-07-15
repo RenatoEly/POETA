@@ -45,74 +45,7 @@ var yAxis;
 var tip;
 var grafBarra;
 
-function criarGrafBarras(){
-    margin = {top: 10, right: 20, bottom: 30, left: 40};
-    width = 400;
-    height = 200;
-
-	formatPercent = d3.format(".0");
-
-	x = d3.scale.ordinal()
-		.rangeRoundBands([0, width], .1);
-
-	y = d3.scale.linear()
-		.range([height, 0]);
-
-	xAxis = d3.svg.axis()
-		.scale(x)
-		.orient("bottom");
-
-	yAxis = d3.svg.axis()
-		.scale(y)
-		.orient("left")
-		.tickFormat(formatPercent);
-
-	tip = d3.tip()
-		.attr('class', 'd3-tip')
-		.offset([-10, 0])
-		.html(function(d) {
-		return "<strong>"+d.atividade+":</strong> <span style='color:red'>" + d.nota + "</span>";
-	})
-
-	grafBarra = d3.select(document.getElementById("grafico")).append("svg")
-		.attr("width", width + margin.left + margin.right)
-		.attr("height", height + margin.top + margin.bottom)
-		.append("g")
-		.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-}
-
-function desenharGrafBarras(d){
-			var data = converteDados(d);
-				grafBarra.call(tip);
-				
-					x.domain(data.map(function(d) { return d.atv; }));
-					y.domain([0, 10]);
-					
-					grafBarra.append("g")
-					.attr("class", "x axis")
-					.attr("transform", "translate(0," + height + ")")
-					.call(xAxis);
-
-					grafBarra.append("g")
-					.attr("class", "y axis")
-					.call(yAxis);
-					
-					grafBarra.selectAll(".bar")
-					.data(data)
-					.enter().append("rect")
-					.attr("class", "bar")
-					.attr("x", function(d) { return x(d.atv); })
-					.attr("width", x.rangeBand())
-					.attr("y", function(d) { return y(d.nota); })
-					.attr("height", function(d) { return height - y(d.nota); })
-					.style("fill", function(d) { return escalaNota(d.nota)})
-					.on('mouseover', tip.show)
-					.on('mouseout', tip.hide)
-}
-    
-function main() {
-
-    var m = [20, 120, 20, 120],
+var m = [20, 120, 20, 120],
         w = 4280 - m[1] - m[3],
         h = 900 - m[0] - m[2],
         i = 0,
@@ -132,6 +65,8 @@ function main() {
 	dominioNotas = [1,5,10];
 	
 	var escala = d3.scale.linear().range(cores);
+    
+function main() {
 	escala.domain(dominio); //Parâmetro usado para definir a mudança de cores (Verde, Vermelho, amarelo)
 	
 	escalaNota = d3.scale.linear().range(cores);
@@ -165,87 +100,8 @@ function main() {
     toolTipGrafTempo = d3.select(document.getElementById("toolTipGrafTempo"));
     
      criarGrafBarras();
-
-//Grafico de linhas
-google.charts.load('current', {'packages':['line','timeline']});
-function geraGraficoLinhas(node){
-      google.charts.setOnLoadCallback(drawChart(node));
-
-    function drawChart(node) {
-		var alunos = [];
-		getLeafs(node,alunos);
-      var data = new google.visualization.DataTable();
-      data.addColumn('string', 'Atividades');
-      for(var i = 0; i < alunos.length; i++){
-		data.addColumn('number', alunos[i].Level18);
-	}
-	
-	var matrix = [];
-	for(var i = 0; i < node.depth; i++){
-		matrix[i] = [];
-	}
-	
-	var aux = node;
-	for(var i = node.depth; i > 1; i--){
-		matrix[i-1][0] = aux.key;
-		for(var j = 0; j < alunos.length; j++){
-			matrix[i-1][j+1] = alunos[j]["Nota"+(i-1)]
-		}
-		aux = aux.parent  
-	}
-	matrix[0][0] = '0';
-	for(var i = 0; i < alunos.length; i++){
-		matrix[0][i+1] = 0;
-	}
-      data.addRows(matrix);
-
-      var options = {
-        chart: {
-          title: 'Grafico de Visualizacao de Desempenho dos Alunos.',
-          subtitle: ''
-        },
-        width: 1100,
-        height: 450,
-        axes: {
-          x: {
-            0: {side: 'down'}
-          }
-        }
-      };
-
-      var chart = new google.charts.Line(document.getElementById('graficoLinhas'));
-
-      chart.draw(data, options);
-    }
- }
- 
- function geraGraficoTempo(node){
-	 google.charts.setOnLoadCallback(drawChart(node));
-      function drawChart(node) {
-        var container = document.getElementById('graficoTempo');
-        var chart = new google.visualization.Timeline(container);
-        var dataTable = new google.visualization.DataTable();
-
-        dataTable.addColumn({ type: 'string', id: 'Atividades' });
-        dataTable.addColumn({ type: 'string', id: 'Name' });
-        dataTable.addColumn({ type: 'date', id: 'Start' });
-        dataTable.addColumn({ type: 'date', id: 'End' });
-        
-        var matrix = [];
-		for(var i = 0; i < node.depth - 2; i++){
-			matrix[i] = [];
-		}
-		
-		var aux = node.parent;
-		for(var i = node.depth - 2; i > 0; i--){
-			matrix[i-1] = [i.toString(),aux.key, converteData(node["Data Inicio "+i]), converteData(node["Data Fim "+i])];
-			aux = aux.parent;
-		}
-		
-        dataTable.addRows(matrix);
-        chart.draw(dataTable);
-      }
- }
+     
+     google.charts.load('current', {'packages':['line','timeline']});
  
  function toggleAll(d) {
             if (d.values && d.values.actuals) {
@@ -256,11 +112,7 @@ function geraGraficoLinhas(node){
                 d.values.forEach(toggleAll);
                 toggleNodes(d);
             }
-        }
- 
- function converteData(data){
-	 return new Date(Number(data.slice(6,10)), Number(data.slice(3,5)), Number(data.slice(0,2)));
- }		
+        }		
 
     var fedSpend = d3.select(document.getElementById("fedSpend")); //Subquadro "Federal Funds" dentro do toolTip
 
@@ -362,25 +214,6 @@ function geraGraficoLinhas(node){
         tree.children(function (d) {
             return d.children;
         });
-        
-        function removeEmptyNodes(node,parent,id) {
-		if(!node.values) return
-        if(node.key === ""){
-			var tam = parent.values.length;
-			for(var k = 0; k < node.values.length-1; k++){
-				parent.values[k+tam] = parent.values[id+k+1];
-			}
-			for(var j = 0; j < node.values.length; j++){
-				parent.values[id+j] = node.values[j];
-			}
-			node = parent.values[id];
-			if(!node.values) return
-		}
-		for(var i = 0; i < node.values.length; i++){
-			removeEmptyNodes(node.values[i],node,i);
-			if(node.values[i].key === "") i--;
-		}
-    }
 		
         initialize();
 
@@ -430,30 +263,6 @@ function geraGraficoLinhas(node){
 
     }
 
-   function setAnimacao(nodes) {
-        for (var y = 0; y < nodes.length; y++) {
-            var node = nodes[y];
-           if (node.children) {
-                setAnimacao(node.children);
-               for (var z = 0; z < node.children.length; z++) {
-                   var child = node.children[z];
-                   for (var i = 0; i < sumFields.length; i++) {
-                        if (isNaN(node["sum_" + sumFields[i]])) node["sum_" + sumFields[i]] = 0;
-                        node["sum_" + sumFields[i]] += Number(child["sum_" + sumFields[i]]);
-                   }
-               }
-           }
-           else {
-              for (var i = 0; i < sumFields.length; i++) {
-                    node["sum_" + sumFields[i]] = Number(node[sumFields[i]]);
-                    if (isNaN(node["sum_" + sumFields[i]])) {
-                        node["sum_" + sumFields[i]] = 0;
-                    }
-               }
-          }
-        
-       }
-    }
     function sumNodesCopia(root) {
 		var pai = {};
 		var folhas = [];
@@ -483,25 +292,6 @@ function geraGraficoLinhas(node){
 			} 
 		}
     }
-    
-    function getLeafs(node,leafs){
-		var childrens;
-		if(node.children){
-			childrens = node.children;
-			
-		}
-		else if(node._children){
-			childrens = node._children;
-		}
-		if(childrens){
-			for(var i = 0; i < childrens.length; i++){
-				getLeafs(childrens[i],leafs);
-			}
-		}
-		else{
-			leafs.push(node);
-		}
-	}
 
     function update(source) {
 
@@ -521,7 +311,7 @@ function geraGraficoLinhas(node){
             d.numChildren = (d.children) ? d.children.length : 0;
 			
 			if(d.depth <= 1){
-				d.linkColor = "#e6f2ff";
+				d.linkColor = "#0000ff";
 			}
 			else if(d.numChildren > 0 || d._children){
 				d.linkColor = escala(d[campo[0]]/(d[campo[0]] + d[campo[1]] + d[campo[2]]));
