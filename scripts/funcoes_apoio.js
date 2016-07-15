@@ -64,3 +64,100 @@ function converteData(data){
 			leafs.push(node);
 		}
 	}
+
+
+function esconderGrafico(d) {
+			
+					toolTipGrafLinhas.transition()
+					.duration(200)
+					.style("opacity", "0")
+					.transition()
+					.duration(0)
+					.style("top","-1000px");
+				
+					 toolTip.transition()
+					.duration(200)
+					.style("opacity", "0");
+				
+					toolTipGrafTempo.transition()
+					.duration(200)
+					.style("opacity", "0")
+					.transition()
+					.duration(0)
+					.style("top","-1000px");
+				
+					toolTipAluno.transition()
+					.duration(200)
+					.style("opacity", "0")
+					.transition()
+					.duration(0)
+					.style("top","-1000px");
+					apagaGrafBarras();
+			
+            d3.select(labels[d.key]).transition().style("font-weight","normal").style("font-size","12");
+            d3.select(circles[d.key]).transition().style("fill-opacity",0.3);
+        }
+        
+        
+			function exibirGrafico(d) {
+			if (typeof d.target != "undefined") {
+                d = d.target;
+            }
+            
+            if (d.children || d._children){
+				if (detalhes){
+					geraGraficoLinhas(d);
+					toolTipGrafLinhas.transition()
+					.duration(200)
+					.style("opacity", "1");
+					
+					toolTipGrafLinhas.style("left", (d3.event.pageX - 400) + "px")
+                .style("top", (d3.event.pageY + 30) + "px");
+				}
+				else{
+				
+				toolTip.transition()
+                .duration(200)
+                .style("opacity", "1");
+				
+				header.text(d["source_Level1"]);
+				header1.text((d.depth > 1) ? d["source_Level2"] : "");
+				header2.html((d.depth > 2) ? d["source_Level3"] : "");
+				if (d.depth > 3) header2.html(header2.html() + " - " + d["source_Level4"]);
+            
+				fedSpend.text(formatCurrency(d[campo[0]]));
+
+				stateSpend.text(formatCurrency(d[campo[1]]));
+
+				localSpend.text(formatCurrency(d[campo[2]]));
+				
+				 toolTip.style("left", (d3.event.pageX - 220) + "px")
+                .style("top", (d3.event.pageY - 60) + "px");
+				}
+			}
+			else {
+				if(detalhes){
+					geraGraficoTempo(d);
+					toolTipGrafTempo.transition()
+					.duration(200)
+					.style("opacity", "1");
+					
+					toolTipGrafTempo.style("left", (d3.event.pageX - 700) + "px")
+                .style("top", (d3.event.pageY + 30) + "px");
+				}
+				else{
+				nodeAux = d;
+				toolTipAluno.transition()
+				.duration(200)
+				.style("opacity", "1");
+				
+				desenharGrafBarras(d);
+				
+				toolTipAluno.style("left", (d3.event.pageX - 220) + "px")
+                .style("top", (d3.event.pageY + 30) + "px");
+				}
+
+			}
+ 
+            d3.select(labels[d.key]).transition().style("font-weight","bold").style("font-size","16");
+        }

@@ -31,10 +31,43 @@
  var dominioNota;
  var clickada = true;
  
+ var formatCurrency = function (d) {
+        return d
+    };
+    
+    var header;	 //Texto que aparece no topo do toolTip
+    var header1; //Texto logo abaixo do header do toolTip
+    var header2; //Texto abaixo do anterior
+ 
+ var fedSpend; //Subquadro "Federal Funds" dentro do toolTip
+
+    var stateSpend; //Subquadro "State Funds" dentro do toolTip
+
+    var localSpend; //Subquadro "Local Funds" dentro do toolTip
+					//Todos os quadros e header's definidos aqui são declarados no proprio index.html
+
+	var detalhes;
+    var federalButton;
+    var stateButton;
+    var localButton;
+ 
     var margin;
     var width;
     var height;
 
+
+//Cores para o grafico. Nota >= 7, Nota < 7, Desistentes.
+	var coresGrafico = ["#00ff00","#ff0000","#c7dbe5"];
+
+    var colors = ["#bd0026", "#fecc5c", "#fd8d3c", "#f03b20", "#B02D5D",
+        "#9B2C67", "#982B9A", "#692DA7", "#5725AA", "#4823AF",
+        "#d7b5d8", "#dd1c77", "#5A0C7A", "#5A0C7A"];
+
+
+    var tree;
+    var circles;
+    var paths;
+    var labels;
 
 
 //Variáveis usadas para desenhar o grafico de barras nos nós alunos
@@ -62,7 +95,7 @@ var m = [20, 120, 20, 120],
 	var cores=["#ff0000","#ffff00","#00ff00"];
 	//valores do dominio para escala de cores. Menor valor fica a primeira cor do array cores e o maior a segunda.
 	var dominio = [0,0.5,1];
-	dominioNotas = [1,5,10];
+	var dominioNotas = [1,5,10];
 	
 	var escala = d3.scale.linear().range(cores);
     
@@ -71,37 +104,25 @@ function main() {
 	
 	escalaNota = d3.scale.linear().range(cores);
 	escalaNota.domain(dominioNotas);
-	
-	//Cores para o grafico. Nota >= 7, Nota < 7, Desistentes.
-	var coresGrafico = ["#00ff00","#ff0000","#c7dbe5"];
 
-    var colors = ["#bd0026", "#fecc5c", "#fd8d3c", "#f03b20", "#B02D5D",
-        "#9B2C67", "#982B9A", "#692DA7", "#5725AA", "#4823AF",
-        "#d7b5d8", "#dd1c77", "#5A0C7A", "#5A0C7A"];
 
-    var formatCurrency = function (d) {
-        return d
-    };
-
-    var tree = d3.layout.tree();
-    var circles={};
-    var paths={};
-    var labels={};
+    tree = d3.layout.tree();
+    circles={};
+    paths={};
+    labels={};
 
     tree.children(function (d) { return d.values; }).size([h, w]);
 
     toolTip = d3.select(document.getElementById("toolTip")); //Todo o quadro que aparece ao passar o mouse em um nó
-    var header = d3.select(document.getElementById("head"));	 //Texto que aparece no topo do toolTip
-    var header1 = d3.select(document.getElementById("header1")); //Texto logo abaixo do header do toolTip
-    var header2 = d3.select(document.getElementById("header2")); //Texto abaixo do anterior
+    header = d3.select(document.getElementById("head"));	 //Texto que aparece no topo do toolTip
+    header1 = d3.select(document.getElementById("header1")); //Texto logo abaixo do header do toolTip
+    header2 = d3.select(document.getElementById("header2")); //Texto abaixo do anterior
     
     toolTipAluno = d3.select(document.getElementById("toolTipAluno"));
     toolTipGrafLinhas = d3.select(document.getElementById("toolTipGrafLinha"));
     toolTipGrafTempo = d3.select(document.getElementById("toolTipGrafTempo"));
     
      criarGrafBarras();
-     
-     google.charts.load('current', {'packages':['line','timeline']});
  
  function toggleAll(d) {
             if (d.values && d.values.actuals) {
@@ -114,17 +135,16 @@ function main() {
             }
         }		
 
-    var fedSpend = d3.select(document.getElementById("fedSpend")); //Subquadro "Federal Funds" dentro do toolTip
+    fedSpend = d3.select(document.getElementById("fedSpend")); //Subquadro "Federal Funds" dentro do toolTip
+    stateSpend = d3.select(document.getElementById("stateSpend")); //Subquadro "State Funds" dentro do toolTip
 
-    var stateSpend = d3.select(document.getElementById("stateSpend")); //Subquadro "State Funds" dentro do toolTip
-
-    var localSpend = d3.select(document.getElementById("localSpend")); //Subquadro "Local Funds" dentro do toolTip
+    localSpend = d3.select(document.getElementById("localSpend")); //Subquadro "Local Funds" dentro do toolTip
 					//Todos os quadros e header's definidos aqui são declarados no proprio index.html
 
-	var detalhes = false;
-    var federalButton = d3.select(document.getElementById("federalButton"));
-    var stateButton = d3.select(document.getElementById("stateButton"));
-    var localButton = d3.select(document.getElementById("localButton"));
+	detalhes = false;
+    federalButton = d3.select(document.getElementById("federalButton"));
+    stateButton = d3.select(document.getElementById("stateButton"));
+    localButton = d3.select(document.getElementById("localButton"));
 
     var diagonal = d3.svg.diagonal()
         .projection(function (d) {
@@ -486,106 +506,12 @@ function main() {
         });
 
 
-        function exibirGrafico(d) {
-			
-			if (typeof d.target != "undefined") {
-                d = d.target;
-            }
-            
-            if (d.children || d._children){
-				if (detalhes){
-					geraGraficoLinhas(d);
-					toolTipGrafLinhas.transition()
-					.duration(200)
-					.style("opacity", "1");
-					
-					toolTipGrafLinhas.style("left", (d3.event.pageX - 400) + "px")
-                .style("top", (d3.event.pageY + 30) + "px");
-				}
-				else{
-				
-				toolTip.transition()
-                .duration(200)
-                .style("opacity", "1");
-				
-				header.text(d["source_Level1"]);
-				header1.text((d.depth > 1) ? d["source_Level2"] : "");
-				header2.html((d.depth > 2) ? d["source_Level3"] : "");
-				if (d.depth > 3) header2.html(header2.html() + " - " + d["source_Level4"]);
-            
-				fedSpend.text(formatCurrency(d[campo[0]]));
-
-				stateSpend.text(formatCurrency(d[campo[1]]));
-
-				localSpend.text(formatCurrency(d[campo[2]]));
-				
-				 toolTip.style("left", (d3.event.pageX - 220) + "px")
-                .style("top", (d3.event.pageY - 60) + "px");
-				}
-			}
-			else {
-				if(detalhes){
-					geraGraficoTempo(d);
-					toolTipGrafTempo.transition()
-					.duration(200)
-					.style("opacity", "1");
-					
-					toolTipGrafTempo.style("left", (d3.event.pageX - 700) + "px")
-                .style("top", (d3.event.pageY + 30) + "px");
-				}
-				else{
-				nodeAux = d;
-				toolTipAluno.transition()
-				.duration(200)
-				.style("opacity", "1");
-				
-				desenharGrafBarras(d);
-				
-				toolTipAluno.style("left", (d3.event.pageX - 220) + "px")
-                .style("top", (d3.event.pageY + 30) + "px");
-				}
-
-			}
- 
-            d3.select(labels[d.key]).transition().style("font-weight","bold").style("font-size","16");
-        }
+        
         
         function type(d) {
 			d.frequency = +d.frequency;
 			return d;
 		}
-
-        function esconderGrafico(d) {
-			
-					toolTipGrafLinhas.transition()
-					.duration(200)
-					.style("opacity", "0")
-					.transition()
-					.duration(0)
-					.style("top","-1000px");
-				
-					 toolTip.transition()
-					.duration(200)
-					.style("opacity", "0");
-				
-					toolTipGrafTempo.transition()
-					.duration(200)
-					.style("opacity", "0")
-					.transition()
-					.duration(0)
-					.style("top","-1000px");
-				
-					toolTipAluno.transition()
-					.duration(200)
-					.style("opacity", "0")
-					.transition()
-					.duration(0)
-					.style("top","-1000px");
-					apagaGrafBarras();
-			
-            d3.select(labels[d.key]).transition().style("font-weight","normal").style("font-size","12");
-            d3.select(circles[d.key]).transition().style("fill-opacity",0.3);
-        }
     }
 
     function toggleNodes(d) {

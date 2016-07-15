@@ -1,5 +1,5 @@
 //Grafico de linhas
-
+google.charts.load('current', {'packages':['line','timeline']});
 function geraGraficoLinhas(node){
       google.charts.setOnLoadCallback(drawChart(node));
 
