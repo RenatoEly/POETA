@@ -58,6 +58,8 @@
 
 //Cores para o grafico. Nota >= 7, Nota < 7, Desistentes.
 	var coresGrafico = ["#00ff00","#ff0000","#c7dbe5"];
+	
+	var cor_level1 = "#1C86EE";
 
     var colors = ["#bd0026", "#fecc5c", "#fd8d3c", "#f03b20", "#B02D5D",
         "#9B2C67", "#982B9A", "#692DA7", "#5725AA", "#4823AF",
@@ -331,7 +333,7 @@ function main() {
             d.numChildren = (d.children) ? d.children.length : 0;
 			
 			if(d.depth <= 1){
-				d.linkColor = "#0000ff";
+				d.linkColor = cor_level1;
 			}
 			else if(d.numChildren > 0 || d._children){
 				d.linkColor = escala(d[campo[0]]/(d[campo[0]] + d[campo[1]] + d[campo[2]]));
