@@ -51,20 +51,62 @@ function converteData(data){
 	}
     
     function filtrar(){
+		recuperarNosFiltrados();
+		
 		var folhas = [];
 		getLeafs(root,folhas);
 		for(var i=0; i < folhas.length; i++){
-			if(9 === folhas[i]["Nota1"]){
-				nos_apagados[i] = folhas[i];
-				var filhos = folhas[i].parent.children
+			if(!opcoes[1] && folhas[i]["sexo"]==="M"
+				|| !opcoes[2] && folhas[i]["sexo"]==="F"
+				|| !opcoes[3] && folhas[i]["estadoCivil"]==="SOLTEIRO"
+				|| !opcoes[4] && folhas[i]["estadoCivil"]==="CASADO"
+				|| !opcoes[5] && folhas[i]["escola"]==="PUBLICA"
+				|| !opcoes[6] && folhas[i]["escola"]==="PARTICULAR"){
+
+				var filhos = folhas[i].parent.children;
 				for(var j=0; j < filhos.length; j++){
 					if (filhos[j] === folhas[i]){
+						nos_apagados.push([folhas[i],j]);
 						filhos.splice(j,1);
+						break;
+					}
+				}
+			}
+			
+			else if(opcoes[0]){
+				var de = document.getElementById("textDe");
+				var ate = document.getElementById("textAte");
+				if(Number(folhas[i]["idade"]) < Number(de.value) || Number(folhas[i]["idade"]) > Number(ate.value)){
+					var filhos = folhas[i].parent.children;
+					for(var j=0; j < filhos.length; j++){
+						if (filhos[j] === folhas[i]){
+							nos_apagados.push([folhas[i],j]);
+							filhos.splice(j,1);
+							break;
+						}
 					}
 				}
 			}
 		}
 		update(root);
+	}
+	
+	function recuperarNosFiltrados(){
+		var pai;
+		for(var i=nos_apagados.length-1; i >= 0; i--){
+			if(opcoes[1] && nos_apagados[i][0]["sexo"]==="M"
+				|| opcoes[2] && nos_apagados[i][0]["sexo"]==="F"
+				|| opcoes[3] && nos_apagados[i][0]["estadoCivil"]==="SOLTEIRO"
+				|| opcoes[4] && nos_apagados[i][0]["estadoCivil"]==="CASADO"
+				|| opcoes[5] && nos_apagados[i][0]["escola"]==="PUBLICA"
+				|| opcoes[6] && nos_apagados[i][0]["escola"]==="PARTICULAR"
+				){
+					
+					pai = nos_apagados[i][0].parent;
+					pai.children.splice(nos_apagados[i][1],0,nos_apagados[i][0]);
+					nos_apagados.splice(i,1);
+				}
+		}
 	}
     
     function setAnimacao(nodes) {
@@ -95,8 +137,10 @@ function converteData(data){
     function getLeafs(node,leafs){
 		var childrens;
 		if(node.children){
+			node[campo[2]] = 0;
+			node[campo[1]] = 0;
+			node[campo[0]] = 0;
 			childrens = node.children;
-			
 		}
 		else if(node._children){
 			childrens = node._children;

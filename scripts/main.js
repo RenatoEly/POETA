@@ -261,7 +261,6 @@ function main() {
                 }
             }
 	    setAnimacao(root.children);
-            sumNodesCopia(root);
         }
     });
 }
@@ -289,9 +288,6 @@ function sumNodesCopia(root) {
 			pai = folhas[i].parent;
 			while(pai.depth > 1){
 				setSourceFields(pai, pai.parent);
-				if (isNaN(pai[campo[2]])) pai[campo[2]] = 0;
-				if (isNaN(pai[campo[1]])) pai[campo[1]] = 0;
-				if (isNaN(pai[campo[0]])) pai[campo[0]] = 0;
 				depth = pai.depth-1;
 				folhas[i]["Nota"+depth] = Number(folhas[i]["Nota"+depth]);
 				
@@ -341,7 +337,7 @@ function converteDados(node){
 }
 
 function update(source) {
-
+		sumNodesCopia(root);
         var duration = d3.event && d3.event.altKey ? 5000 : 500;
 
         var nodes = tree.nodes(root);
