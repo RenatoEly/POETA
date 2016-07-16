@@ -31,6 +31,10 @@
  var dominioNota;
  var clickada = true;
  
+ var svg;
+ var levelCeil;
+ var diagonal;
+ 
  var formatCurrency = function (d) {
         return d
     };
@@ -83,8 +87,8 @@ var grafBarra;
 var m = [20, 120, 20, 120],
         w = 4280 - m[1] - m[3],
         h = 900 - m[0] - m[2],
-        i = 0,
-        root = {};
+        i = 0;
+    var root;
 	var raio = 10;
     var spendField = "sum_Federal";
     var sumFields = ["Federal", "GovXFer", "State", "Local"];
@@ -126,17 +130,6 @@ function main() {
     
      criarGrafBarras();
  
- function toggleAll(d) {
-            if (d.values && d.values.actuals) {
-                d.values.actuals.forEach(toggleAll);
-                toggleNodes(d);
-            }
-            else if (d.values) {
-                d.values.forEach(toggleAll);
-                toggleNodes(d);
-            }
-        }		
-
     fedSpend = d3.select(document.getElementById("fedSpend")); //Subquadro "Federal Funds" dentro do toolTip
     stateSpend = d3.select(document.getElementById("stateSpend")); //Subquadro "State Funds" dentro do toolTip
 
@@ -148,18 +141,18 @@ function main() {
     stateButton = d3.select(document.getElementById("stateButton"));
     localButton = d3.select(document.getElementById("localButton"));
 
-    var diagonal = d3.svg.diagonal()
+    diagonal = d3.svg.diagonal()
         .projection(function (d) {
             return [d.y, d.x];
         });
 
-    var svg = d3.select("#body").append("svg:svg")
+    svg = d3.select("#body").append("svg:svg")
         .attr("width", w + m[1] + m[3])
         .attr("height", h + m[0] + m[2])
         .append("svg:g")
         .attr("transform", "translate(" + m[3] + "," + m[0] + ")");
 
-    var levelCeil=[{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{}];   //Acrescentei Mais Nós (Níveis de Célula) 25/03/2016
+    levelCeil=[{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{}];   //Acrescentei Mais Nós (Níveis de Célula) 25/03/2016
 
     var nodeRadius;
 
@@ -271,8 +264,9 @@ function main() {
             sumNodesCopia(root);
         }
     });
+}
 
-    function setSourceFields(child, parent) {
+function setSourceFields(child, parent) {
         if (parent) {
             for (var i = 0; i < sourceFields.length; i++) {
                 var sourceField = sourceFields[i];
@@ -285,7 +279,7 @@ function main() {
 
     }
 
-    function sumNodesCopia(root) {
+function sumNodesCopia(root) {
 		var pai = {};
 		var folhas = [];
 		var depth;
@@ -315,7 +309,38 @@ function main() {
 		}
     }
 
-    function update(source) {
+function toggleNodes(d) {
+        if (d.children) {
+            d._children = d.children;
+            d.children = null;
+        } else {
+            d.children = d._children;
+            d._children = null;
+        }
+    }
+
+function toggleButtons(index) {
+        d3.selectAll(".button").attr("class",function (d,i) { return (i==index) ? "button selected" : "button"; });
+        d3.selectAll(".tip").attr("class",function (d,i) { return (i==index) ? "tip selected" : "tip";});
+    }
+
+function apagaGrafBarras(){
+		grafBarra.selectAll(".bar").remove();
+		grafBarra.selectAll("g").remove();
+}	
+
+function converteDados(node){
+		var data = [];
+		for(var i = 1; i < node.depth-1; i++){
+			data[i-1] = {atividade: node["Level"+(i+1)],
+					nota: node["Nota"+(i)],
+					atv: "Atv."+i
+					};
+		}
+		return data;
+}
+
+function update(source) {
 
         var duration = d3.event && d3.event.altKey ? 5000 : 500;
 
@@ -516,34 +541,13 @@ function main() {
 		}
     }
 
-    function toggleNodes(d) {
-        if (d.children) {
-            d._children = d.children;
-            d.children = null;
-        } else {
-            d.children = d._children;
-            d._children = null;
-        }
-    }
-
-    function toggleButtons(index) {
-        d3.selectAll(".button").attr("class",function (d,i) { return (i==index) ? "button selected" : "button"; });
-        d3.selectAll(".tip").attr("class",function (d,i) { return (i==index) ? "tip selected" : "tip";});
-    }
-}
-
-function apagaGrafBarras(){
-		grafBarra.selectAll(".bar").remove();
-		grafBarra.selectAll("g").remove();
-}	
-
-function converteDados(node){
-		var data = [];
-		for(var i = 1; i < node.depth-1; i++){
-			data[i-1] = {atividade: node["Level"+(i+1)],
-					nota: node["Nota"+(i)],
-					atv: "Atv."+i
-					};
-		}
-		return data;
-}
+function toggleAll(d) {
+            if (d.values && d.values.actuals) {
+                d.values.actuals.forEach(toggleAll);
+                toggleNodes(d);
+            }
+            else if (d.values) {
+                d.values.forEach(toggleAll);
+                toggleNodes(d);
+            }
+        }		

@@ -21,6 +21,52 @@ function converteData(data){
 		}
     }
     
+    var nos_apagados = [];
+    var opcoes = [false, true, true, true, true, true, true];
+    
+    function setar_opcoes(op){
+		switch (op){
+			case "faixa_etaria":
+				opcoes[0] = !opcoes[0];
+				break;
+			case "masculino":
+				opcoes[1] = !opcoes[1];
+				break;
+			case "feminino":
+				opcoes[2] = !opcoes[2];
+				break;
+			case "solteiro":
+				opcoes[3] = !opcoes[3];
+				break;
+			case "casado":
+				opcoes[4] = !opcoes[4];
+				break;
+			case "publica":
+				opcoes[5] = !opcoes[5];
+				break;
+			case "particular":
+				opcoes[6] = !opcoes[6];
+				break;
+		}
+	}
+    
+    function filtrar(){
+		var folhas = [];
+		getLeafs(root,folhas);
+		for(var i=0; i < folhas.length; i++){
+			if(9 === folhas[i]["Nota1"]){
+				nos_apagados[i] = folhas[i];
+				var filhos = folhas[i].parent.children
+				for(var j=0; j < filhos.length; j++){
+					if (filhos[j] === folhas[i]){
+						filhos.splice(j,1);
+					}
+				}
+			}
+		}
+		update(root);
+	}
+    
     function setAnimacao(nodes) {
         for (var y = 0; y < nodes.length; y++) {
             var node = nodes[y];

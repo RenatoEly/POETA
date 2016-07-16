@@ -78,24 +78,24 @@
 		</div>
 		<div class="info">
 			<div>
-			<p><input type="checkbox" name="filtro"> Faixa etária</p>
+			<p><input type="checkbox" name="filtro" onclick="setar_opcoes('faixa_etaria')"> Faixa etária</p>
 			de  <input id="textDe" type="text" name="de" size="3">  até  <input id="textAte" type="text" name="ate" size="3">
 			</div>
 			<div>
 			<p>Sexo</p>
-			<input type="checkbox" name="sexo" value="masculino" checked onclick=""> Masculino
-			<input type="checkbox" name="sexo" value="feminino" checked onclick=""> Feminino
+			<input type="checkbox" name="sexo" value="masculino" checked onclick="setar_opcoes('masculino')"> Masculino
+			<input type="checkbox" name="sexo" value="feminino" checked onclick="setar_opcoes('feminino')"> Feminino
 			</div>
 			<p> Estado civil</p>
-			<input type="checkbox" name="estado" value="solteiro" checked onclick=""> Solteiro
-			<input type="checkbox" name="estado" value="casado" checked onclick=""> Casado
+			<input type="checkbox" name="estado" value="solteiro" checked onclick="setar_opcoes('solteiro')"> Solteiro
+			<input type="checkbox" name="estado" value="casado" checked onclick="setar_opcoes('casado')"> Casado
 			<div>
 			<p> Escola de origem</p>
-			<input type="checkbox" name="origem" value="publica" checked onclick=""> Publica
-			<input type="checkbox" name="origem" value="particular" checked onclick=""> Particular
+			<input type="checkbox" name="origem" value="publica" checked onclick="setar_opcoes('publica')"> Publica
+			<input type="checkbox" name="origem" value="particular" checked onclick="setar_opcoes('particular')"> Particular
 			</div>
 			<br>
-			<button type="button" class="btn btn-primary">Ok</button>
+			<button type="button" class="btn btn-primary" onclick="filtrar()">Ok</button>
 		</div>
 	</div>
     <script src='http://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js'></script>
