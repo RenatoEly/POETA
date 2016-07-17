@@ -66,7 +66,7 @@
 				<li><a title="Home" href="#">Home</a></li>
 					<li><a>
 					<form>
-						<INPUT id="federalButton" TYPE="RADIO" NAME="OPCAO" VALUE="op1"> Geral
+						<INPUT id="federalButton" TYPE="RADIO" NAME="OPCAO" VALUE="op1" checked> Geral
 						<INPUT id="stateButton" TYPE="RADIO" NAME="OPCAO" VALUE="op2"> Individual
 					</form>
 					</a>
@@ -80,7 +80,7 @@
 		<div class="info">
 			<div>
 			<p><input type="checkbox" name="filtro" onclick="setar_opcoes('faixa_etaria')"> Faixa etária</p>
-			de  <input id="textDe" type="text" name="de" size="3">  até  <input id="textAte" type="text" name="ate" size="3">
+			de  <input class="info2" id="textDe" type="text" name="de" size="3">  até  <input class="info2" id="textAte" type="text" name="ate" size="3">
 			</div>
 			<div>
 			<p>Sexo</p>
@@ -96,7 +96,7 @@
 			<input type="checkbox" name="origem" value="particular" checked onclick="setar_opcoes('particular')"> Particular
 			</div>
 			<br>
-			<button type="button" class="btn btn-primary" onclick="filtrar()">Ok</button>
+			<button class="info2" type="button" class="btn btn-primary" onclick="filtrar()">OK</button>
 		</div>
 	</div>
     <script src='http://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js'></script>
@@ -104,6 +104,7 @@
 
 
 <div id="body" style="position: absolute; top:80px">
+	
     <div id="toolTip" class="tooltip" style="opacity:0;">
         <div id="head" class="header"></div>
         <div id="header1" class="header1"></div>

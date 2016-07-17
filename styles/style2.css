@@ -111,6 +111,10 @@ body h1 {
           transition: opacity 0.5s ease-in 0.1s;
 }
 
+.info .info2{
+color:black;
+}
+
 .info {
   position: absolute;
   
@@ -118,11 +122,12 @@ body h1 {
   top: 300px;
   z-index: 999;
   width: 264px;
-  color: black;
+  color: white;
   text-align: left;
   line-height: 1.6;
   opacity: 0;
 }
+
 .info .logo p {
   width: 100px;
   height: 100px;

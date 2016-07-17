@@ -137,6 +137,7 @@ function converteData(data){
     function getLeafs(node,leafs){
 		var childrens;
 		if(node.children){
+			node[campo[3]] = 0;
 			node[campo[2]] = 0;
 			node[campo[1]] = 0;
 			node[campo[0]] = 0;
@@ -153,6 +154,31 @@ function converteData(data){
 		else{
 			leafs.push(node);
 		}
+	}
+	
+	function colocarBalao(node){
+		if(!node.children){
+			return;
+		}
+		
+		if(typeof node[campo[3]] != "undefined"){
+			
+			if(node[campo[3]] > 0){
+				d3.select(document.getElementById("body")).append("div")
+						.attr("name","balao")
+						.attr("class","balao2")
+						.style("left", (node.x+317)+"px")
+						.style("top", (-node.y+120)+"px")
+						.text(""+node[campo[3]]+" Desistência(s)");
+			}
+		}
+		for(var i = 0; i < node.children.length; i++){
+			colocarBalao(node.children[i]);
+		}
+	}
+	
+	function removerBalao(){
+		d3.selectAll(document.getElementsByName("balao")).remove();
 	}
 
 

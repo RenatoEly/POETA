@@ -93,7 +93,7 @@ var m = [20, 120, 20, 120],
     var spendField = "sum_Federal";
     var sumFields = ["Federal", "GovXFer", "State", "Local"];
     var sourceFields = ["Category", "Level1", "Level2", "Level3", "Level4", "Level5", "Level6", "Level7", "Level8", "Level9", "Level10", "Level11", "Level12", "Level13", "Level14", "Level15", "Level16", "Level17", "Level18"];
-	var campo = ["Nota >= 7","Nota < 7","Desistentes"];
+	var campo = ["Nota >= 7","Nota < 7","Desistentes","Desistentes aqui"];
 	
 	//Atributo que será usado para calcular a cor dos nós
 	var campoAnalize = "sum_Federal";
@@ -291,8 +291,11 @@ function sumNodesCopia(root) {
 				depth = pai.depth-1;
 				folhas[i]["Nota"+depth] = Number(folhas[i]["Nota"+depth]);
 				
-				if(isNaN(folhas[i]["Nota"+depth])){ 
+				if(isNaN(folhas[i]["Nota"+depth])){
 					pai[campo[2]]++;
+					if(!isNaN(folhas[i]["Nota"+(depth-1)])){
+						pai[campo[3]]++;
+					}
 				}
 				else if(folhas[i]["Nota"+depth] < 7){
 					pai[campo[1]]++;
@@ -527,9 +530,9 @@ function update(source) {
             d.x0 = d.x;
             d.y0 = d.y;
         });
-
-
-        
+		
+		removerBalao();
+        colocarBalao(root);
         
         function type(d) {
 			d.frequency = +d.frequency;
