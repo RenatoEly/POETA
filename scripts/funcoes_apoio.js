@@ -162,13 +162,13 @@ function converteData(data){
 		}
 		
 		if(typeof node[campo[3]] != "undefined"){
-			
 			if(node[campo[3]] > 0){
+				console.log(node);
 				d3.select(document.getElementById("body")).append("div")
 						.attr("name","balao")
 						.attr("class","balao2")
-						.style("left", (node.x+317)+"px")
-						.style("top", (-node.y+120)+"px")
+						.style("left", (node.y+70)+"px")
+						.style("top", (node.x-980)+"px")
 						.text(""+node[campo[3]]+" Desistência(s)");
 			}
 		}
