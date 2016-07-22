@@ -64,9 +64,11 @@ function converteData(data){
 				|| !opcoes[6] && folhas[i]["escola"]==="PARTICULAR"){
 
 				var filhos = folhas[i].parent.children;
+				if(filhos == null) filhos = folhas[i].parent._children
+				
 				for(var j=0; j < filhos.length; j++){
 					if (filhos[j] === folhas[i]){
-						nos_apagados.push([folhas[i],j]);
+						nos_apagados.push([filhos[j],j]);
 						filhos.splice(j,1);
 						break;
 					}
@@ -80,7 +82,7 @@ function converteData(data){
 					var filhos = folhas[i].parent.children;
 					for(var j=0; j < filhos.length; j++){
 						if (filhos[j] === folhas[i]){
-							nos_apagados.push([folhas[i],j]);
+							nos_apagados.push([filhos[j],j]);
 							filhos.splice(j,1);
 							break;
 						}
@@ -163,7 +165,6 @@ function converteData(data){
 		
 		if(typeof node[campo[3]] != "undefined"){
 			if(node[campo[3]] > 0){
-				console.log(node);
 				d3.select(document.getElementById("body")).append("div")
 						.attr("name","balao")
 						.attr("class","balao2")
