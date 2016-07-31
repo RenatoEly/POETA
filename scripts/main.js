@@ -425,7 +425,7 @@ function update(source) {
                 return d.children || d._children ? "end" : "start";
             })
             .text(function (d) {
-                var ret = (!(d.children || d._children)) ? d.Level18 : d.key; //Mudei esta linha, acrescentando o level 9
+                var ret = (!(d.children || d._children)) ? d.Level18 : d.key; 
                 ret = (String(ret).length > 25) ? String(ret).substr(0, 22) + "..." : ret;
                 return ret;
             })
@@ -509,7 +509,7 @@ function update(source) {
             })
             .style("stroke-width", 2*raio)
             .style("stroke-linecap", "round")
-
+		
         link.transition()
             .duration(duration)
             .attr("d", diagonal)
@@ -524,6 +524,36 @@ function update(source) {
             .duration(duration)
             .attr("d", diagonal)
             .remove();
+            
+            link[0].forEach(function (d){
+			d3.select(d).style("stroke", function (d, i) {
+				d3.select(document.getElementById("gradient_"+d.target.id)).remove();
+				var gradient = svg.append("defs")
+				.append("linearGradient")
+				.attr("id", "gradient_"+d.target.id)
+				.attr("x1", "0%")
+				.attr("y1", "0%")
+				.attr("x2", "100%")
+				.attr("y2", "0%")
+				
+				gradient.append("stop")
+			    .attr("offset", "0%")
+			    .attr("stop-color", d.source.linkColor)
+			    .attr("stop-opacity", 1);
+				
+				gradient.append("stop")
+			    .attr("offset", "100%")
+			    .attr("stop-color", d.target.linkColor)
+			    .attr("stop-opacity", 1);
+                
+			   	return "url(#gradient_"+d.target.id+")"
+            })
+            .style("stroke-width", 2*raio)
+            .style("stroke-linecap", "round")
+		});
+            
+            
+        
 
         // Stash the old positions for transition.
         nodes.forEach(function (d) {

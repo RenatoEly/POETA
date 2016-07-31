@@ -51,8 +51,8 @@ function converteData(data){
 	}
     
     function filtrar(){
+		console.log(root);
 		recuperarNosFiltrados();
-		
 		var folhas = [];
 		getLeafs(root,folhas);
 		for(var i=0; i < folhas.length; i++){
@@ -62,9 +62,13 @@ function converteData(data){
 				|| !opcoes[4] && folhas[i]["estadoCivil"]==="CASADO"
 				|| !opcoes[5] && folhas[i]["escola"]==="PUBLICA"
 				|| !opcoes[6] && folhas[i]["escola"]==="PARTICULAR"){
-
+				
+				
+				if(folhas[i].parent.children == null){
+					folhas[i].parent.children = folhas[i].parent._children;
+					folhas[i].parent._children = null;
+				}
 				var filhos = folhas[i].parent.children;
-				if(filhos == null) filhos = folhas[i].parent._children
 				
 				for(var j=0; j < filhos.length; j++){
 					if (filhos[j] === folhas[i]){
@@ -105,6 +109,10 @@ function converteData(data){
 				){
 					
 					pai = nos_apagados[i][0].parent;
+					if(pai.children == null){
+						pai.children = pai._children;
+						pai._children = null;
+					}
 					pai.children.splice(nos_apagados[i][1],0,nos_apagados[i][0]);
 					nos_apagados.splice(i,1);
 				}
@@ -165,11 +173,13 @@ function converteData(data){
 		
 		if(typeof node[campo[3]] != "undefined"){
 			if(node[campo[3]] > 0){
+				var qntBaloes = d3.selectAll(document.getElementsByName("balao"))[0].length;
+				
 				d3.select(document.getElementById("body")).append("div")
 						.attr("name","balao")
 						.attr("class","balao2")
 						.style("left", (node.y+70)+"px")
-						.style("top", (node.x-980)+"px")
+						.style("top", (node.x-980-62*qntBaloes)+"px")
 						.text(""+node[campo[3]]+" Desistência(s)");
 			}
 		}

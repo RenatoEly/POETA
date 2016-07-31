@@ -121,26 +121,26 @@
 		</div>
 		<div class="info">
 			<div>
-			<p><input type="checkbox" name="filtro" onclick="setar_opcoes('faixa_etaria')"> Faixa etária</p>
+			<p><input id="chck_fx" id="faixa" type="checkbox" name="filtro" onclick="setar_opcoes('faixa_etaria')"> Faixa etária</p>
 			de  <input class="info2" id="textDe" type="text" name="de" size="3">  até  <input class="info2" id="textAte" type="text" name="ate" size="3">
 			</div>
 			<div>
 			<p>Sexo</p>
-			<input type="checkbox" name="sexo" value="masculino" checked onclick="setar_opcoes('masculino')"> Masculino
-			<input type="checkbox" name="sexo" value="feminino" checked onclick="setar_opcoes('feminino')"> Feminino
+			<input id="chck_mas" type="checkbox" name="filtro" value="masculino" onclick="setar_opcoes('masculino')"> Masculino
+			<input id="chck_fem" type="checkbox" name="filtro" value="feminino" onclick="setar_opcoes('feminino')"> Feminino
 			</div>
 			<p> Estado civil</p>
-			<input type="checkbox" name="estado" value="solteiro" checked onclick="setar_opcoes('solteiro')"> Solteiro
-			<input type="checkbox" name="estado" value="casado" checked onclick="setar_opcoes('casado')"> Casado
+			<input id="chck_sol" type="checkbox" name="filtro" value="solteiro" onclick="setar_opcoes('solteiro')"> Solteiro
+			<input id="chck_cas" type="checkbox" name="filtro" value="casado" onclick="setar_opcoes('casado')"> Casado
 			<div>
 			<p> Escola de origem</p>
-			<input type="checkbox" name="origem" value="publica" checked onclick="setar_opcoes('publica')"> Publica
-			<input type="checkbox" name="origem" value="particular" checked onclick="setar_opcoes('particular')"> Particular
+			<input id="chck_pub" type="checkbox" name="filtro" value="publica" onclick="setar_opcoes('publica')"> Publica
+			<input id="chck_par" type="checkbox" name="filtro" value="particular" onclick="setar_opcoes('particular')"> Particular
 			</div>
 			<br>
-			<button class="info2" type="button" class="btn btn-primary" onclick="filtrar()">OK</button>
+			<button class="info2" type="filtro" class="btn btn-primary" onclick="filtrar()">OK</button>
 		</div>
 	</div>
 </body>
-
+<script type="text/javascript" src="scripts/inicio.js"></script>
 </html>
