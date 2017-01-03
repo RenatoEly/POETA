@@ -171,22 +171,16 @@ function main() {
         var nest = d3.nest();
         var maxLevel = 17;
 
-        function loadingData(){
-            var i=1;
-            while(i<=maxLevel){
-                loadingLevel(i);
-                i++;
-            }
-            return nest.entries(data);
-        }
-        
-        function loadingLevel(i){
+        loadingData(1);
+
+        function loadingData(i){
             nest = nest.key(function (d) {
                 return d["Level"+i];
             });   
+            if(i< maxLevel) loadingData(i+1);
         }
-       
-        nest = loadingData();
+        
+        nest =  nest.entries(data);
         root = {};
         root.values = nest;
         removeEmptyNodes(root,null,0);
