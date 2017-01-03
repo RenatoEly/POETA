@@ -165,60 +165,28 @@ function main() {
                 data.push(d);
         })
 
-        var nest = d3.nest()
-            .key(function (d) {
-                return d.Level1;
-            })
-            .key(function (d) {
-                return d.Level2;
-            })
-            .key(function (d) {
-                return d.Level3;
-            })
-            .key(function (d) {  
-                return d.Level4; 
-            })                   
-            .key(function (d) {  
-                return d.Level5; 
-            })                   
-            .key(function (d) {  
-                return d.Level6; 
-            })                   
-            .key(function (d) {  
-                return d.Level7; 
-            })                   
-            .key(function (d) {  
-                return d.Level8; 
-            })                   
-            .key(function (d) {  
-                return d.Level9; 
-            })
-            .key(function (d) {
-                return d.Level10;
-            })
-            .key(function (d) {
-                return d.Level11;
-            })
-            .key(function (d) {
-                return d.Level12;
-            })
-            .key(function (d) {  
-                return d.Level13; 
-            })                   
-            .key(function (d) {  
-                return d.Level14; 
-            })                   
-            .key(function (d) {  
-                return d.Level15; 
-            })                   
-            .key(function (d) {  
-                return d.Level16; 
-            })                   
-            .key(function (d) {  
-                return d.Level17; 
-            })
-            .entries(data);
+       
+        console.log(data);
 
+        var nest = d3.nest();
+        var maxLevel = 17;
+
+        function loadingData(){
+            var i=1;
+            while(i<=maxLevel){
+                loadingLevel(i);
+                i++;
+            }
+            return nest.entries(data);
+        }
+        
+        function loadingLevel(i){
+            nest = nest.key(function (d) {
+                return d["Level"+i];
+            });   
+        }
+       
+        nest = loadingData();
         root = {};
         root.values = nest;
         removeEmptyNodes(root,null,0);
@@ -260,7 +228,7 @@ function main() {
                     levelCeil[y]["sum_" + sumFields[i]] = 0;
                 }
             }
-	    setAnimacao(root.children);
+	    //setAnimacao(root.children);
         }
     });
 }
