@@ -166,8 +166,6 @@ function main() {
         })
 
                
-        console.log(data);
-        sleep(20000);
         var nest = d3.nest();
         var maxLevel = 17;
 
