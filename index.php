@@ -10,15 +10,20 @@ if(!$link){
     exit();
 }
 
+mysqli_query($link,"SET NAMES 'utf8'");
+mysqli_query($link,'SET character_set_connection=utf8');
+mysqli_query($link,'SET character_set_client=utf8');
+mysqli_query($link,'SET character_set_results=utf8');
+
 $query = "SELECT * FROM CAMINHO";
 $response = mysqli_query($link, $query);
 
 $i = 1;
-$ultimoAluno = -1;
+$alunoAnterior = -1;
 $jArray = array();
 
 while($node = mysqli_fetch_array($response)){
-    if($ultimoAluno !== -1 and $node["ID_ALUNO"] !== $ultimoAluno){
+    if($alunoAnterior !== -1 and $node["ID_ALUNO"] !== $alunoAnterior){
         $i = 1;
         $json["Nome"] = $node["NOME"];
         $jArray[] = $json;
@@ -29,10 +34,13 @@ while($node = mysqli_fetch_array($response)){
     $json["Data Fim " . $i] = $node["DATA_FIM"];
     $json["Nota" . $i] = $node["NOTA"];
     
-    $ultimoAluno = $node["ID_ALUNO"];
+    $alunoAnterior = $node["ID_ALUNO"];
     $i++;
 }
 
-header("home.html");
+$json["Nome"] = $node["NOME"];
+$jArray[] = $json;
+
+header('Location: home.html');
 
 ?>
