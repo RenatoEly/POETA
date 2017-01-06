@@ -156,6 +156,8 @@ function main() {
 
     var nodeRadius;
 
+    var dataTeste = <?php echo json_encode($jArray) ?>
+
     d3.csv("data/DataBase.csv", function (csv) {
 
         var data = [];

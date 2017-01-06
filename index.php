@@ -33,6 +33,6 @@ while($node = mysqli_fetch_array($response)){
     $i++;
 }
 
-echo json_encode($jArray);
+header("home.html");
 
 ?>
