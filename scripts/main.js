@@ -32,7 +32,6 @@
  var clickada = true;
  
  var svg;
- var levelCeil;
  var diagonal;
  
  var formatCurrency = function (d) {
@@ -92,7 +91,6 @@ var m = [20, 120, 20, 120],
 	var raio = 10;
     var spendField = "sum_Federal";
     var sumFields = ["Federal", "GovXFer", "State", "Local"];
-    var sourceFields = ["Category", "Level1", "Level2", "Level3", "Level4", "Level5", "Level6", "Level7", "Level8", "Level9", "Level10", "Level11", "Level12", "Level13", "Level14", "Level15", "Level16", "Level17", "Level18"];
 	var campo = ["Nota >= 7","Nota < 7","Desistentes","Desistentes aqui"];
 	
 	//Atributo que será usado para calcular a cor dos nós
@@ -151,26 +149,8 @@ function main() {
         .attr("height", h + m[0] + m[2])
         .append("svg:g")
         .attr("transform", "translate(" + m[3] + "," + m[0] + ")");
-
-    levelCeil=[{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{}];   //Acrescentei Mais Nós (Níveis de Célula) 25/03/2016
-
-    var nodeRadius;
-
-    console.log(dataTeste);
-
-    d3.csv("data/DataBase.csv", function (csv) {
-
-        var data = [];
-
-        //Remove all zero values nodes
-        csv.forEach(function (d) {
-                data.push(d);
-        })
-		
-		console.log(data);
         
         var nest = d3.nest();
-        var maxLevel = 17;
 
         loadingData(1);
 
@@ -184,6 +164,7 @@ function main() {
         nest =  nest.entries(data);
         root = {};
         root.values = nest;
+        console.log(root);
         removeEmptyNodes(root,null,0);
         root.x0 = h / 2;
         root.y0 = 0;
@@ -217,29 +198,8 @@ function main() {
                 toggleButtons(2);
                 detalhes = false;
             });
-
-            for (var i = 0; i < sumFields.length; i++) {
-                for (var y = 0; y < levelCeil.length; y++) {
-                    levelCeil[y]["sum_" + sumFields[i]] = 0;
-                }
-            }
-	    //setAnimacao(root.children);
         }
-    });
 }
-
-function setSourceFields(child, parent) {
-        if (parent) {
-            for (var i = 0; i < sourceFields.length; i++) {
-                var sourceField = sourceFields[i];
-                if (child[sourceField] != undefined) {
-                    child["source_" + sourceField] = child[sourceField];
-                }
-                parent["source_" + sourceField] = (child["source_" + sourceField]) ? child["source_" + sourceField] : child[sourceField];
-            }
-        }
-
-    }
 
 function sumNodesCopia(root) {
 		var pai = {};
@@ -247,10 +207,8 @@ function sumNodesCopia(root) {
 		var depth;
         getLeafs(root,folhas);
         for(var i = 0; i < folhas.length; i++){
-			setSourceFields(folhas[i], folhas[i].parent);
 			pai = folhas[i].parent;
 			while(pai.depth > 1){
-				setSourceFields(pai, pai.parent);
 				depth = pai.depth-1;
 				folhas[i]["Nota"+depth] = Number(folhas[i]["Nota"+depth]);
 				
@@ -309,10 +267,6 @@ function update(source) {
         var nodes = tree.nodes(root);
 
         var depthCounter = 0;
-
-        nodeRadius = d3.scale.sqrt()
-            .domain([0, levelCeil[0][spendField]])
-            .range([8, 8]);
 
         // Normalize for fixed-depth.
         nodes.forEach(function (d) {
@@ -388,7 +342,7 @@ function update(source) {
                 return d.children || d._children ? "end" : "start";
             })
             .text(function (d) {
-                var ret = (!(d.children || d._children)) ? d.Level18 : d.key; 
+                var ret = (!(d.children || d._children)) ? d.Nome : d.key; 
                 ret = (String(ret).length > 25) ? String(ret).substr(0, 22) + "..." : ret;
                 return ret;
             })

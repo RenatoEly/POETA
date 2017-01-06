@@ -48,6 +48,7 @@ $response = mysqli_query($link, $query);
 $i = 1;
 $alunoAnterior = -1;
 $jArray = array();
+$maxLevel = 1;
 
 while($node = mysqli_fetch_array($response)){
     if($alunoAnterior !== -1 and $node["ID_ALUNO"] !== $alunoAnterior){
@@ -59,9 +60,16 @@ while($node = mysqli_fetch_array($response)){
     $json["Level" . $i] = $node["DESC_ATIVIDADE"];
     $json["Data Inicio " . $i] = $node["DATA_INICIO"];
     $json["Data Fim " . $i] = $node["DATA_FIM"];
-    $json["Nota" . $i] = $node["NOTA"];
     $json["Nome"] = $node["NOME"];
-    
+    if($node["NOTA"] == -1){
+		$json["Nota" . $i] = "d";
+	}
+	else{
+		$json["Nota" . $i] = $node["NOTA"];
+	}
+    if($i > $maxLevel){
+		$maxLevel = $i;
+	}
     $alunoAnterior = $node["ID_ALUNO"];
     $i++;
 }
@@ -93,7 +101,8 @@ $jArray[] = $json;
     <script type="text/javascript" src="scripts/funcoes_apoio.js"></script>
     <script src='scripts/jquery.min.js'></script>
     <script>
-		var dataTeste = <?php echo json_encode($jArray); ?>;
+		var data = <?php echo json_encode($jArray); ?>;
+		var maxLevel = <?php echo $maxLevel; ?>;
 	</script>
 
 </head>

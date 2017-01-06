@@ -4,7 +4,7 @@ function converteData(data){
  
      function removeEmptyNodes(node,parent,id) {
 		if(!node.values) return
-        if(node.key === ""){
+        if(node.key === "undefined"){
 			var tam = parent.values.length;
 			for(var k = 0; k < node.values.length-1; k++){
 				parent.values[k+tam] = parent.values[id+k+1];
@@ -14,6 +14,7 @@ function converteData(data){
 			}
 			node = parent.values[id];
 			if(!node.values) return
+			removeEmptyNodes(node,parent,id);
 		}
 		for(var i = 0; i < node.values.length; i++){
 			removeEmptyNodes(node.values[i],node,i);
