@@ -156,7 +156,6 @@ function main() {
 
     var nodeRadius;
 
-    var dataTeste = <?php echo json_encode($jArray) ?>
     console.log(dataTeste);
 
     d3.csv("data/DataBase.csv", function (csv) {
@@ -167,8 +166,9 @@ function main() {
         csv.forEach(function (d) {
                 data.push(d);
         })
-
-               
+		
+		console.log(data);
+        
         var nest = d3.nest();
         var maxLevel = 17;
 
