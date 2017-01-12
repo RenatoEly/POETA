@@ -58,20 +58,25 @@ while($node = mysqli_fetch_array($response)){
         unset($json);
     }
     $json["Level" . $i] = $node["DESC_ATIVIDADE"];
-    $json["Data Inicio " . $i] = $node["DATA_INICIO"];
-    $json["Data Fim " . $i] = $node["DATA_FIM"];
     $json["Nome"] = $node["NOME"];
-    if($node["NOTA"] == -1){
-		$json["Nota" . $i] = "d";
+    $json["sexo"] = $node["SEXO"];
+    $json["estadoCivil"] = $node["ESTADO_CIVIL"];
+    $json["escola"] = $node["REDE_ESCOLAR"];
+    if($i != 1){
+		$json["Data Inicio " . ($i - 1)] = $node["DATA_INICIO"];
+		$json["Data Fim " . ($i - 1)] = $node["DATA_FIM"];
+		if($node["NOTA"] == -1){
+			$json["Nota" . ($i - 1)] = "d";
+		}
+		else{
+			$json["Nota" . ($i - 1)] = $node["NOTA"];
+		}
+		if($i > $maxLevel){
+			$maxLevel = $i;
+		}
 	}
-	else{
-		$json["Nota" . $i] = $node["NOTA"];
-	}
-    if($i > $maxLevel){
-		$maxLevel = $i;
-	}
-    $alunoAnterior = $node["ID_ALUNO"];
-    $i++;
+	$alunoAnterior = $node["ID_ALUNO"];
+	$i++;
 }
 
 $jArray[] = $json;
@@ -103,6 +108,7 @@ $jArray[] = $json;
     <script>
 		var data = <?php echo json_encode($jArray); ?>;
 		var maxLevel = <?php echo $maxLevel; ?>;
+		console.log(data);
 	</script>
 
 </head>

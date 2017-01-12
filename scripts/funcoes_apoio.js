@@ -1,5 +1,5 @@
 function converteData(data){
-	 return new Date(Number(data.slice(6,10)), Number(data.slice(3,5)), Number(data.slice(0,2)));
+	 return new Date(Number(data.slice(0,4)), Number(data.slice(5,7)), Number(data.slice(8,10)));
  }
  
      function removeEmptyNodes(node,parent,id) {
