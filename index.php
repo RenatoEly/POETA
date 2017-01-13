@@ -169,17 +169,15 @@ $jArray[] = $json;
 		<div class="text">
 			<ul>
 				<li><a title="Home" href="#">Home</a></li>
-					<li><a>
-					<form>
-						<INPUT id="federalButton" TYPE="RADIO" NAME="OPCAO" VALUE="op1" checked> Geral
-						<INPUT id="stateButton" TYPE="RADIO" NAME="OPCAO" VALUE="op2"> Individual
-					</form>
-					</a>
-</li>
-	<li><a href="#" >Contact</a>
-</li>
-	<li><a href="#" >Settings</a>
-</li>
+				<li><a>
+				   <form>
+    					<INPUT id="federalButton" TYPE="RADIO" NAME="OPCAO" VALUE="op1" checked> Geral
+				        <INPUT id="stateButton" TYPE="RADIO" NAME="OPCAO" VALUE="op2"> Individual
+				   </form>
+				</a>
+                </li>
+	           <li><a href="#" >Contact</a></li>
+	           <li><a href="#" >Settings</a></li>
 			</ul>
 		</div>
 		<div class="info">
