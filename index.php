@@ -108,7 +108,6 @@ $jArray[] = $json;
     <script>
 		var data = <?php echo json_encode($jArray); ?>;
 		var maxLevel = <?php echo $maxLevel; ?>;
-		console.log(data);
 	</script>
 
 </head>

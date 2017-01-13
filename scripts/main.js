@@ -164,7 +164,6 @@ function main() {
         nest =  nest.entries(data);
         root = {};
         root.values = nest;
-        console.log(root);
         removeEmptyNodes(root,null,0);
         root.x0 = h / 2;
         root.y0 = 0;
