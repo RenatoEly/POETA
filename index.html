@@ -24,65 +24,6 @@
  OTHER DEALINGS IN THE SOFTWARE.
 
  -->
- 
- <?php
-$servidor = 'localhost';
-$banco = 'POETAbd';
-$usuario = 'root';
-$senha = 'POETAbd157';
-$link = mysqli_connect($servidor, $usuario, $senha, $banco);
-
-if(!$link){
-    echo "Erro ao se conectar ao banco de dados!";
-    exit();
-}
-
-mysqli_query($link,"SET NAMES 'utf8'");
-mysqli_query($link,'SET character_set_connection=utf8');
-mysqli_query($link,'SET character_set_client=utf8');
-mysqli_query($link,'SET character_set_results=utf8');
-
-$query = "SELECT * FROM CAMINHO";
-$response = mysqli_query($link, $query);
-
-$i = 1;
-$alunoAnterior = -1;
-$jArray = array();
-$maxLevel = 1;
-
-while($node = mysqli_fetch_array($response)){
-    if($alunoAnterior !== -1 and $node["ID_ALUNO"] !== $alunoAnterior){
-        $i = 1;
-        $json["Nome"] = $node["NOME"];
-        $jArray[] = $json;
-        unset($json);
-    }
-    $json["Level" . $i] = $node["DESC_ATIVIDADE"];
-    $json["Nome"] = $node["NOME"];
-    $json["sexo"] = $node["SEXO"];
-    $json["estadoCivil"] = $node["ESTADO_CIVIL"];
-    $json["escola"] = $node["REDE_ESCOLAR"];
-    if($i != 1){
-		$json["Data Inicio " . ($i - 1)] = $node["DATA_INICIO"];
-		$json["Data Fim " . ($i - 1)] = $node["DATA_FIM"];
-		if($node["NOTA"] == -1){
-			$json["Nota" . ($i - 1)] = "d";
-		}
-		else{
-			$json["Nota" . ($i - 1)] = $node["NOTA"];
-		}
-		if($i > $maxLevel){
-			$maxLevel = $i;
-		}
-	}
-	$alunoAnterior = $node["ID_ALUNO"];
-	$i++;
-}
-
-$jArray[] = $json;
-?>
-
- 
 
 <!DOCTYPE html>
 <head>
@@ -105,10 +46,6 @@ $jArray[] = $json;
     <script type="text/javascript" src="scripts/grafico_linhas.js"></script>
     <script type="text/javascript" src="scripts/funcoes_apoio.js"></script>
     <script src='scripts/jquery.min.js'></script>
-    <script>
-		var data = <?php echo json_encode($jArray); ?>;
-		var maxLevel = <?php echo $maxLevel; ?>;
-	</script>
 
 </head>
 
@@ -169,15 +106,17 @@ $jArray[] = $json;
 		<div class="text">
 			<ul>
 				<li><a title="Home" href="#">Home</a></li>
-				<li><a>
-				   <form>
-    					<INPUT id="federalButton" TYPE="RADIO" NAME="OPCAO" VALUE="op1" checked> Geral
-				        <INPUT id="stateButton" TYPE="RADIO" NAME="OPCAO" VALUE="op2"> Individual
-				   </form>
-				</a>
-                </li>
-	           <li><a href="#" >Contact</a></li>
-	           <li><a href="#" >Settings</a></li>
+					<li><a>
+					<form>
+						<INPUT id="federalButton" TYPE="RADIO" NAME="OPCAO" VALUE="op1" checked> Geral
+						<INPUT id="stateButton" TYPE="RADIO" NAME="OPCAO" VALUE="op2"> Individual
+					</form>
+					</a>
+</li>
+	<li><a href="#" >Contact</a>
+</li>
+	<li><a href="#" >Settings</a>
+</li>
 			</ul>
 		</div>
 		<div class="info">

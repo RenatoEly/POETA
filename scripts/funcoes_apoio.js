@@ -1,10 +1,10 @@
 function converteData(data){
-	 return new Date(Number(data.slice(0,4)), Number(data.slice(5,7)), Number(data.slice(8,10)));
+	 return new Date(Number(data.slice(6,10)), Number(data.slice(3,5)), Number(data.slice(0,2)));
  }
  
      function removeEmptyNodes(node,parent,id) {
 		if(!node.values) return
-        if(node.key === "undefined"){
+        if(node.key === ""){
 			var tam = parent.values.length;
 			for(var k = 0; k < node.values.length-1; k++){
 				parent.values[k+tam] = parent.values[id+k+1];
@@ -14,7 +14,6 @@ function converteData(data){
 			}
 			node = parent.values[id];
 			if(!node.values) return
-			removeEmptyNodes(node,parent,id);
 		}
 		for(var i = 0; i < node.values.length; i++){
 			removeEmptyNodes(node.values[i],node,i);
