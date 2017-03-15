@@ -31,7 +31,7 @@
     <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
     
 
-    <title>Federal Budget Data Visualization D3.js</title>
+    <title>POETA UFCG</title>
     <link type="text/css" rel="stylesheet" href="styles/style.css">
     <link rel="stylesheet" href="styles/normalize.css">
     <link rel='stylesheet prefetch' href='http://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css'>
