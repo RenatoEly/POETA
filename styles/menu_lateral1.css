@@ -115,12 +115,11 @@ color:black;
 }
 
 .info {
-  position: absolute;
-  
+  position: absolute; 
   padding-left: 4em;
-  top: 300px;
+  top: 240px;
   z-index: 999;
-  width: 264px;
+  width: 166px;
   color: white;
   text-align: left;
   line-height: 1.6;
@@ -170,12 +169,12 @@ color:black;
   text-shadow: -1px -1px #575757, 1px 1px #121212;
 }
 
-/* 
-Only added a nav query for height bc width is fine 
+ 
+/*Only added a nav query for height bc width is fine 
 (covers full width of viewport from 270px) down to 220px.  
 Bottom nav info section is hidden when screen height 
-hits 550px or below.  Nav still functions as a fly-out  
-*/
+hits 550px or below.  Nav still functions as a fly-out  */
+
 @media screen and (max-height: 550px) {
   .info {
     display: none;
