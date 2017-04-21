@@ -98,7 +98,7 @@ var m = [20, 120, 20, 120],
 	//Atributo que será usado para calcular a cor dos nós
 	var campoAnalize = "sum_Federal";
 	//Possíveis cores dos nós. Vermelho, amarelo e verde, respectivamente.
-	var cores=["#fc8d59","#ffffbf","#91cf60"];
+	var cores=["#ff0000","#ffff00","#00ff00"];
 	//valores do dominio para escala de cores. Menor valor fica a primeira cor do array cores e o maior a segunda.
 	var dominio = [0,0.5,1];
 	var dominioNotas = [1,5,10];
