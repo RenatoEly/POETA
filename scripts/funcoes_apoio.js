@@ -22,7 +22,7 @@ function converteData(data){
     }
     
     var nos_apagados = [];
-    var opcoes = [false, true, true, true, true, true, true];
+    var opcoes = [false, true, true, true, true, true, true, false];
     
     function setar_opcoes(op){
 		switch (op){
@@ -47,11 +47,23 @@ function converteData(data){
 			case "particular":
 				opcoes[6] = !opcoes[6];
 				break;
+			case "daltonico":
+				opcoes[7] = !opcoes[7];
+				break;
 		}
 	}
     
     function filtrar(){
-		console.log(root);
+		//console.log(root);
+		if(opcoes[7]) {
+			escala = d3.scale.linear().range(coresDaltonico);
+			escalaNota = d3.scale.linear().range(coresDaltonico);
+		}else{
+		 	escala = d3.scale.linear().range(cores);
+			escalaNota = d3.scale.linear().range(cores);
+		}
+		escala.domain(dominio);
+		escalaNota.domain(dominioNotas);
 		recuperarNosFiltrados();
 		var folhas = [];
 		getLeafs(root,folhas);

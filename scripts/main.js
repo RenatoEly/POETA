@@ -99,6 +99,8 @@ var m = [20, 120, 20, 120],
 	var campoAnalize = "sum_Federal";
 	//Possíveis cores dos nós. Vermelho, amarelo e verde, respectivamente.
 	var cores=["#ff0000","#ffff00","#00ff00"];
+    //Possíveis cores dos nós para usuários daltônicos.
+    var coresDaltonico=["#fc8d59","#ffffbf","#91cf60"];
 	//valores do dominio para escala de cores. Menor valor fica a primeira cor do array cores e o maior a segunda.
 	var dominio = [0,0.5,1];
 	var dominioNotas = [1,5,10];

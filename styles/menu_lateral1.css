@@ -117,7 +117,7 @@ color:black;
 .info {
   position: absolute; 
   padding-left: 4em;
-  top: 240px;
+  top: 210px;
   z-index: 999;
   width: 166px;
   color: white;

@@ -7,3 +7,4 @@ document.getElementById("chck_par").checked = true;
 document.getElementById("chck_sol").checked = true;
 document.getElementById("chck_cas").checked = true;
 document.getElementById("federalButton").checked = true;
+document.getElementById("chck_dlt").checked = false;
