@@ -159,6 +159,7 @@ function converteData(data){
     function getLeafs(node,leafs){
 		var childrens;
 		if(node.children){
+			node[campo[4]] = 0;
 			node[campo[3]] = 0;
 			node[campo[2]] = 0;
 			node[campo[1]] = 0;

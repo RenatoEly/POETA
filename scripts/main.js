@@ -65,6 +65,8 @@
 	
 	var cor_level1 = "#1C86EE";
 
+    var cor_AtividadeSemNota = "#ffffff"
+
     var colors = ["#bd0026", "#fecc5c", "#fd8d3c", "#f03b20", "#B02D5D",
         "#9B2C67", "#982B9A", "#692DA7", "#5725AA", "#4823AF",
         "#d7b5d8", "#dd1c77", "#5A0C7A", "#5A0C7A"];
@@ -93,7 +95,7 @@ var m = [20, 120, 20, 120],
     var spendField = "sum_Federal";
     var sumFields = ["Federal", "GovXFer", "State", "Local"];
     var sourceFields = ["Category", "Level1", "Level2", "Level3", "Level4", "Level5", "Level6", "Level7", "Level8", "Level9", "Level10", "Level11", "Level12", "Level13", "Level14", "Level15", "Level16", "Level17", "Level18"];
-	var campo = ["Nota >= 7","Nota < 7","Desistentes","Desistentes aqui"];
+	var campo = ["Nota >= 7","Nota < 7","Desistentes","Desistentes aqui","Atividade sem nota"];
 	
 	//Atributo que será usado para calcular a cor dos nós
 	var campoAnalize = "sum_Federal";
@@ -254,13 +256,16 @@ function sumNodesCopia(root) {
 				setSourceFields(pai, pai.parent);
 				depth = pai.depth-1;
 				folhas[i]["Nota"+depth] = Number(folhas[i]["Nota"+depth]);
-				
 				if(isNaN(folhas[i]["Nota"+depth])){
 					pai[campo[2]]++;
-					if(!isNaN(folhas[i]["Nota"+(depth-1)])){
+                    if(!isNaN(folhas[i]["Nota"+(depth-1)])){
 						pai[campo[3]]++;
 					}
-				}
+				}   
+                else if(folhas[i]["Nota"+depth] < 0){
+                    console.log("[data]"+i);
+                    pai[campo[4]]++;
+                }
 				else if(folhas[i]["Nota"+depth] < 7){
 					pai[campo[1]]++;
 				}
@@ -270,7 +275,7 @@ function sumNodesCopia(root) {
 				pai = pai.parent;
 			} 
 		}
-    }
+}
 
 function toggleNodes(d) {
         if (d.children) {
@@ -319,12 +324,17 @@ function update(source) {
         nodes.forEach(function (d) {
             d.y = d.depth * 170;  //Diminuí o tamanho da perna de um nó para o outro (25/03/2016)
             d.numChildren = (d.children) ? d.children.length : 0;
-			
+			console.log(d[campo[4]]);
 			if(d.depth <= 1){
 				d.linkColor = cor_level1;
 			}
 			else if(d.numChildren > 0 || d._children){
-				d.linkColor = escala(d[campo[0]]/(d[campo[0]] + d[campo[1]] + d[campo[2]]));
+                 if(d[campo[4]] > 0 ){
+                    d.linkColor = cor_AtividadeSemNota;
+                 }
+				 else{
+                    d.linkColor = escala(d[campo[0]]/(d[campo[0]] + d[campo[1]] + d[campo[2]]));
+                }
 			}
 			
 			else{
