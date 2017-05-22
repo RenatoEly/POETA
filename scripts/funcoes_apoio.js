@@ -191,8 +191,8 @@ function converteData(data){
 				d3.select(document.getElementById("body")).append("div")
 						.attr("name","balao")
 						.attr("class","balao2")
-						.style("left", (node.y+70)+"px")
-						.style("top", (node.x-980-62*qntBaloes)+"px")
+						.style("left", (node.y+68)+"px")
+						.style("top", (node.x-949-62*qntBaloes)+"px")
 						.text(""+node[campo[3]]+" Desistência(s)");
 			}
 		}
