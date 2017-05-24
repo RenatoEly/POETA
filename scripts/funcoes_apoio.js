@@ -54,7 +54,7 @@ function converteData(data){
 	}
     
     function filtrar(){
-		//console.log(root);
+		//console.log(root);	
 		if(opcoes[7]) {
 			escala = d3.scale.linear().range(coresDaltonico);
 			escalaNota = d3.scale.linear().range(coresDaltonico);
@@ -301,3 +301,11 @@ function esconderGrafico(d) {
  
             d3.select(labels[d.key]).transition().style("font-weight","bold").style("font-size","16");
         }
+
+function setTextModoPesquisa(){
+	var div_mode_pesq = document.getElementById("modo_pesquisa");
+	if(detalhes)
+		div_mode_pesq.innerText = "Modo de pesquisa Individual";
+	else
+		div_mode_pesq.innerText = "Modo de pesquisa Geral";
+}

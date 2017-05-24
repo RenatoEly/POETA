@@ -209,11 +209,13 @@ function main() {
             federalButton.on("click", function (d) {
                 toggleButtons(0);
                 detalhes = false;
+                setTextModoPesquisa();
             });
 
             stateButton.on("click", function (d) {
                 toggleButtons(1);
                 detalhes = true;
+                setTextModoPesquisa();
             });
 
             localButton.on("click", function (d) {
