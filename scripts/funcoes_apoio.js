@@ -305,7 +305,7 @@ function esconderGrafico(d) {
 function setTextModoPesquisa(){
 	var div_mode_pesq = document.getElementById("modo_pesquisa");
 	if(detalhes)
-		div_mode_pesq.innerText = "Modo de pesquisa Individual";
+		div_mode_pesq.innerText = "Modo de visualização Individual";
 	else
-		div_mode_pesq.innerText = "Modo de pesquisa Geral";
+		div_mode_pesq.innerText = "Modo de visualização Geral";
 }

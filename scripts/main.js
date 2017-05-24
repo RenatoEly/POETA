@@ -192,9 +192,15 @@ function main() {
         root.y0 = 0;
 
         var nodes = tree.nodes(root).reverse();
+        var id_num = 0;
+        nodes.forEach(function(d){
+            id_num +=1;
+            d.id_num = id_num;
+        });
         tree.children(function (d) {
             return d.children;
         });
+        
 		
         initialize();
 
@@ -362,7 +368,8 @@ function update(source) {
 
         var nodeEnter = node.enter().append("svg:g")
             .attr("class", "node")
-            .attr("id",function (d) { return "node_" + d.key })
+            .attr("id",function (d) { return "node_" + d.id_num })
+            .attr("name",function (d) { return d.id_num })
             .attr("transform", function (d) {
                 return "translate(" + source.y0 + "," + source.x0 + ")";
             })
@@ -375,9 +382,13 @@ function update(source) {
                 else{
 					if(clickada){
 						exibirGrafico(d);
+                        d3.select(document.getElementById("node_" + d.id_num)).select("circle")
+                                .attr("r", raio+20);
 					}
 					else{
 						esconderGrafico(d);
+                        d3.select(document.getElementById("node_" + d.id_num)).select("circle")
+                                .attr("r", raio+10);
 					}
 					clickada = !clickada;
 				}
